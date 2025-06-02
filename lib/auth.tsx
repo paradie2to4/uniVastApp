@@ -1,0 +1,1 @@
+// This file is now deprecated. Authentication is handled via localStorage and a simple cookie in the login/signup logic. 
