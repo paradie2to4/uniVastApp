@@ -40,14 +40,22 @@ public class Program {
     private University university;
 
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
+<<<<<<< HEAD
     @JsonBackReference(value = "program-applications")
+=======
+    @JsonIgnore
+>>>>>>> 47f4fab (Updated with new features)
     private List<Application> applications = new ArrayList<>();
 
     // Constructors
     public Program() {
     }
 
+<<<<<<< HEAD
     public Program(String name, String description, String degree,String requirements, String duration, double tuitionFee) {
+=======
+    public Program(String name, String description, String degree, String requirements, String duration, double tuitionFee) {
+>>>>>>> 47f4fab (Updated with new features)
         this.name = name;
         this.description = description;
         this.degree = degree;
@@ -134,8 +142,14 @@ public class Program {
         return university;
     }
 
+<<<<<<< HEAD
     @JsonProperty("applications")
     public List<Application> getApplicationsData() {
         return applications;
+=======
+    @JsonProperty("applicationCount")
+    public int getApplicationCount() {
+        return applications != null ? applications.size() : 0;
+>>>>>>> 47f4fab (Updated with new features)
     }
 }

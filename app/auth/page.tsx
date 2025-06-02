@@ -95,6 +95,7 @@ export default function AuthPage() {
       // 1. Register the user
       const response = await fetch("http://localhost:8080/api/users", {
         method: "POST",
+<<<<<<< HEAD
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(signupData),
       });
@@ -102,12 +103,43 @@ export default function AuthPage() {
       console.log('Signup response status:', response.status);
       if (!response.ok) {
         throw new Error("Sign-up failed");
+=======
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          username: signupData.username,
+          email: signupData.email,
+          password: signupData.password,
+          role: signupData.role,
+          firstName: signupData.firstName,
+          lastName: signupData.lastName,
+          universityName: signupData.universityName,
+          universityLocation: signupData.universityLocation
+        }),
+      });
+
+      console.log('Signup response status:', response.status);
+      
+      const responseData = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(responseData.error || "Sign-up failed");
+>>>>>>> 47f4fab (Updated with new features)
       }
 
       // 2. After successful signup, log the user in
       const loginResponse = await fetch("http://localhost:8080/api/users/login", {
         method: "POST",
+<<<<<<< HEAD
         headers: { "Content-Type": "application/json" },
+=======
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+>>>>>>> 47f4fab (Updated with new features)
         body: JSON.stringify({
           username: signupData.username,
           password: signupData.password,
@@ -116,17 +148,50 @@ export default function AuthPage() {
 
       console.log('Auto-login response status:', loginResponse.status);
       if (!loginResponse.ok) {
+<<<<<<< HEAD
         throw new Error("Auto-login after signup failed");
+=======
+        const errorData = await loginResponse.json();
+        throw new Error(errorData.error || "Auto-login after signup failed");
+>>>>>>> 47f4fab (Updated with new features)
       }
 
       const userData = await loginResponse.json();
       console.log('Auto-login successful, user data:', userData);
+<<<<<<< HEAD
       localStorage.setItem("univast_user", JSON.stringify(userData));
       Cookies.set('is_logged_in', 'true', { path: '/' });
 
       // 3. Redirect based on role
       console.log('Redirecting based on role:', userData.role);
       switch (userData.role) {
+=======
+      
+      // Store JWT token and user data
+      const { token, ...userInfo } = userData;
+      localStorage.setItem("univast_token", token);
+      
+      if (userInfo.role === "STUDENT") {
+        // Fetch the student profile using the student ID
+        const studentProfileRes = await fetch(`http://localhost:8080/api/students/${userInfo.studentId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (!studentProfileRes.ok) {
+          throw new Error("Failed to fetch student profile");
+        }
+        const studentProfile = await studentProfileRes.json();
+        localStorage.setItem("univast_user", JSON.stringify(studentProfile));
+      } else {
+        localStorage.setItem("univast_user", JSON.stringify(userInfo));
+      }
+      Cookies.set('is_logged_in', 'true', { path: '/' });
+
+      // Redirecting based on the user role
+      console.log('Redirecting based on role:', userInfo.role);
+      switch (userInfo.role) {
+>>>>>>> 47f4fab (Updated with new features)
         case "STUDENT":
           console.log('Redirecting to student dashboard...');
           router.push("/student-dashboard");
@@ -145,24 +210,38 @@ export default function AuthPage() {
       }
     } catch (error) {
       console.error("Sign-up error:", error);
+<<<<<<< HEAD
       alert("Sign-up failed. Please try again later.");
+=======
+      alert(error instanceof Error ? error.message : "Sign-up failed. Please try again later.");
+>>>>>>> 47f4fab (Updated with new features)
     }
   };
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+<<<<<<< HEAD
 
     try {
       console.log('Starting login process in auth page...')
       const response = await fetch("http://localhost:8080/api/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+=======
+    try {
+      const response = await fetch('http://localhost:8080/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+>>>>>>> 47f4fab (Updated with new features)
         body: JSON.stringify({
           username: loginData.loginInput,
           password: loginData.loginPassword,
         }),
       })
 
+<<<<<<< HEAD
       console.log('Login response status:', response.status)
       
       if (!response.ok) {
@@ -212,11 +291,78 @@ export default function AuthPage() {
           break
         default:
           console.error('Unknown user role:', userData.role)
+=======
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Login failed')
+      }
+
+      const user = await response.json(); // Get the full user object
+      console.log("Logged in user data:", user);
+
+      // Store user data and token in local storage
+      localStorage.setItem('univast_token', 'fake-jwt-token') // Store the actual token if backend provides one
+
+      // Create a user object to store in local storage, including university details
+      const userToStore: any = {
+        userId: user.userId,
+        role: user.role,
+      };
+
+      if (user.role === 'STUDENT' && user.studentId) {
+        userToStore.studentId = user.studentId;
+        // Fetch student profile data if needed for local storage
+        try {
+          const studentProfileResponse = await fetch(`http://localhost:8080/api/students/${user.studentId}`, {
+             headers: { 'Authorization': `Bearer fake-jwt-token` }
+          });
+           if (studentProfileResponse.ok) {
+              const studentProfile = await studentProfileResponse.json();
+              userToStore.firstName = studentProfile.firstName;
+              userToStore.lastName = studentProfile.lastName;
+               userToStore.profilePicture = studentProfile.profilePicture;
+           }
+        } catch (fetchError) {
+           console.error("Failed to fetch student profile after login:", fetchError);
+        }
+      } else if (user.role === 'UNIVERSITY' && user.universityId) {
+        // Include university-specific data
+        userToStore.universityId = user.universityId;
+        userToStore.universityName = user.universityName; // Assuming backend provides this
+        userToStore.logo = user.logo; // Assuming backend provides this
+         userToStore.location = user.location; // Assuming backend provides this
+         userToStore.description = user.description; // Assuming backend provides this
+         userToStore.website = user.website; // Assuming backend provides this
+         userToStore.phoneNumber = user.phoneNumber; // Assuming backend provides this
+         userToStore.foundedYear = user.foundedYear; // Assuming backend provides this
+         userToStore.accreditation = user.accreditation; // Assuming backend provides this
+         userToStore.acceptanceRate = user.acceptanceRate; // Assuming backend provides this
+      }
+
+      localStorage.setItem('univast_user', JSON.stringify(userToStore))
+
+      // Redirect based on role
+      switch (user.role) {
+        case 'STUDENT':
+          router.push('/student-dashboard')
+          break
+        case 'UNIVERSITY':
+          router.push('/university-dashboard')
+          break
+        case 'ADMIN':
+          router.push('/admin-dashboard')
+          break
+        default:
+>>>>>>> 47f4fab (Updated with new features)
           router.push('/auth?tab=login')
       }
     } catch (error) {
       console.error("Login error:", error)
+<<<<<<< HEAD
       alert("Login failed. Please check your credentials and try again.")
+=======
+      alert(error instanceof Error ? error.message : "Login failed. Please check your credentials and try again.")
+>>>>>>> 47f4fab (Updated with new features)
     }
   }
 

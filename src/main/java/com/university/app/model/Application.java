@@ -24,7 +24,11 @@ public class Application {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "program_id")
+<<<<<<< HEAD
     @JsonManagedReference(value = "program-applications")
+=======
+    @JsonIgnore
+>>>>>>> 47f4fab (Updated with new features)
     private Program program;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -32,6 +36,7 @@ public class Application {
     @JsonManagedReference(value = "university-applications")
     private University university;
 
+<<<<<<< HEAD
     public University getUniversity() {
         return university;
     }
@@ -40,6 +45,8 @@ public class Application {
         this.university = university;
     }
 
+=======
+>>>>>>> 47f4fab (Updated with new features)
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
 
@@ -58,6 +65,7 @@ public class Application {
     @Column(name = "uploaded_file_path")
     private String uploadedFilePath;
 
+<<<<<<< HEAD
     public String getUploadedFilePath() {
         return uploadedFilePath;
     }
@@ -66,6 +74,8 @@ public class Application {
         this.uploadedFilePath = uploadedFilePath;
     }
 
+=======
+>>>>>>> 47f4fab (Updated with new features)
     // Constructors
     public Application() {
         this.status = ApplicationStatus.PENDING;
@@ -107,6 +117,17 @@ public class Application {
         this.program = program;
     }
 
+<<<<<<< HEAD
+=======
+    public University getUniversity() {
+        return university;
+    }
+
+    public void setUniversity(University university) {
+        this.university = university;
+    }
+
+>>>>>>> 47f4fab (Updated with new features)
     public ApplicationStatus getStatus() {
         return status;
     }
@@ -148,6 +169,17 @@ public class Application {
         this.feedback = feedback;
     }
 
+<<<<<<< HEAD
+=======
+    public String getUploadedFilePath() {
+        return uploadedFilePath;
+    }
+
+    public void setUploadedFilePath(String uploadedFilePath) {
+        this.uploadedFilePath = uploadedFilePath;
+    }
+
+>>>>>>> 47f4fab (Updated with new features)
     @JsonProperty("program")
     public Program getProgramData() {
         return program;

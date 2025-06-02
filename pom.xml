@@ -77,6 +77,13 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+<<<<<<< HEAD
+=======
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+        <dependency>
+>>>>>>> 47f4fab (Updated with new features)
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
@@ -89,6 +96,13 @@
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
+<<<<<<< HEAD
+=======
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+>>>>>>> 47f4fab (Updated with new features)
     </dependencies>
 
     <build>

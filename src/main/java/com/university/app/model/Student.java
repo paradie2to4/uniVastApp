@@ -1,19 +1,37 @@
 package com.university.app.model;
 
+<<<<<<< HEAD
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+=======
+>>>>>>> 47f4fab (Updated with new features)
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "students")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+=======
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.university.app.config.LocalDateSerializer;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "students")
+>>>>>>> 47f4fab (Updated with new features)
 public class Student {
 
     @Id
@@ -42,15 +60,38 @@ public class Student {
     @Column(length = 500)
     private String bio;
 
+<<<<<<< HEAD
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
+=======
+    @Column(name = "gpa")
+    private Double gpa;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+>>>>>>> 47f4fab (Updated with new features)
     private List<Application> applications = new ArrayList<>();
 
     @OneToOne
     @JoinColumn(name = "user_id")
+<<<<<<< HEAD
     @JsonIgnore
     private User user;
 
+=======
+    @JsonManagedReference
+    private User user;
+
+    // Add new fields for student profile
+    @Column(name = "date_of_birth")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate dateOfBirth;
+
+    private String location;
+
+    @Column(columnDefinition = "TEXT") // Use TEXT for potentially longer education descriptions
+    private String educationBackground;
+
+>>>>>>> 47f4fab (Updated with new features)
     // Constructors
     public Student() {
     }
@@ -97,6 +138,7 @@ public class Student {
         this.email = email;
     }
 
+<<<<<<< HEAD
     public String getPassword() {
         return password;
     }
@@ -105,6 +147,8 @@ public class Student {
         this.password = password;
     }
 
+=======
+>>>>>>> 47f4fab (Updated with new features)
     public String getProfilePicture() {
         return profilePicture;
     }
@@ -137,6 +181,50 @@ public class Student {
         this.user = user;
     }
 
+<<<<<<< HEAD
+=======
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Double getGpa() {
+        return gpa;
+    }
+
+    public void setGpa(Double gpa) {
+        this.gpa = gpa;
+    }
+
+    // Getters and Setters for new fields
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getEducationBackground() {
+        return educationBackground;
+    }
+
+    public void setEducationBackground(String educationBackground) {
+        this.educationBackground = educationBackground;
+    }
+
+>>>>>>> 47f4fab (Updated with new features)
     // Helper methods
     public void addApplication(Application application) {
         applications.add(application);
@@ -149,7 +237,10 @@ public class Student {
     }
 
     // Full name utility method
+<<<<<<< HEAD
     @JsonProperty("fullName")
+=======
+>>>>>>> 47f4fab (Updated with new features)
     public String getFullName() {
         return firstName + " " + lastName;
     }

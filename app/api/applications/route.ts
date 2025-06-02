@@ -4,14 +4,23 @@ const BASE_URL = "http://localhost:8080/api/applications"; // Java backend endpo
 
 export enum ApplicationStatus {
   PENDING = "PENDING",
+<<<<<<< HEAD
   REVIEWING = "REVIEWING",
   ACCEPTED = "ACCEPTED",
   REJECTED = "REJECTED",
   WITHDRAWN = "WITHDRAWN",
+=======
+  UNDER_REVIEW = "UNDER_REVIEW",
+  ACCEPTED = "ACCEPTED",
+  REJECTED = "REJECTED",
+  WAITLISTED = "WAITLISTED",
+  WITHDRAWN = "WITHDRAWN"
+>>>>>>> 47f4fab (Updated with new features)
 }
 
 export interface Application {
   id: number;
+<<<<<<< HEAD
   student: {
     id: number;
     firstName: string;
@@ -32,6 +41,22 @@ export interface Application {
   submissionDate: string;
   lastUpdated: string;
   feedback?: string;
+=======
+  status: ApplicationStatus;
+  personalStatement?: string;
+  feedback?: string;
+  uploadedFilePath?: string;
+  studentId: number;
+  studentName: string;
+  studentEmail: string;
+  studentGpa?: number;
+  programId: number;
+  programName: string;
+  universityId: number;
+  universityName: string;
+  submissionDate: string;
+  lastUpdated: string;
+>>>>>>> 47f4fab (Updated with new features)
 }
 
 // GET

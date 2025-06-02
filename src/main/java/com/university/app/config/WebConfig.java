@@ -3,17 +3,21 @@ package com.university.app.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+<<<<<<< HEAD
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import java.util.List;
+=======
+>>>>>>> 47f4fab (Updated with new features)
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+<<<<<<< HEAD
         registry.addMapping("/**")  // Allow all paths
                 .allowedOrigins("http://localhost:3000")  // Frontend URL
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
@@ -40,5 +44,12 @@ public class WebConfig implements WebMvcConfigurer {
             MediaType.ALL
         ));
         converters.add(converter);
+=======
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:3000")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
+>>>>>>> 47f4fab (Updated with new features)
     }
 }

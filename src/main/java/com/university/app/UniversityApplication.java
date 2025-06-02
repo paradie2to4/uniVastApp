@@ -19,6 +19,7 @@ public class UniversityApplication {
 
     @Bean
     public CommandLineRunner initData(
+<<<<<<< HEAD
             UserService userService,
             StudentService studentService,
             UniversityService universityService,
@@ -106,6 +107,15 @@ public class UniversityApplication {
         return userService.getUserByUsername(username);
     }
 
+=======
+            UserService userService
+    ) {
+        return args -> {
+            createAdminUser(userService);
+        };
+    }
+
+>>>>>>> 47f4fab (Updated with new features)
     private void createAdminUser(UserService userService) {
         String username = "admin";
         if (!userService.existsByUsername(username)) {
@@ -118,7 +128,11 @@ public class UniversityApplication {
             userService.createUser(user);
             System.out.println("Admin user created: " + username);
         }
+<<<<<<< HEAD
 
     }
 
+=======
+    }
+>>>>>>> 47f4fab (Updated with new features)
 }

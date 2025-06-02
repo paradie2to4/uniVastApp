@@ -18,9 +18,16 @@ interface DashboardSidebarProps {
   onTabChange: (tab: string) => void
   logoIcon: React.ReactNode
   logoText: string
+<<<<<<< HEAD
 }
 
 export default function DashboardSidebar({ items, activeTab, onTabChange, logoIcon, logoText }: DashboardSidebarProps) {
+=======
+  onLogout: () => void
+}
+
+export default function DashboardSidebar({ items, activeTab, onTabChange, logoIcon, logoText, onLogout }: DashboardSidebarProps) {
+>>>>>>> 47f4fab (Updated with new features)
   const [collapsed, setCollapsed] = useState(false)
 
   return (
@@ -64,7 +71,14 @@ export default function DashboardSidebar({ items, activeTab, onTabChange, logoIc
 
       {/* Sidebar Footer */}
       <div className="p-4 border-t border-purple-100">
+<<<<<<< HEAD
         <button className="w-full flex items-center px-3 py-2 rounded-md text-gray-600 hover:bg-purple-50 hover:text-purple-800 transition-colors">
+=======
+        <button 
+          className="w-full flex items-center px-3 py-2 rounded-md text-gray-600 hover:bg-purple-50 hover:text-purple-800 transition-colors"
+          onClick={onLogout}
+        >
+>>>>>>> 47f4fab (Updated with new features)
           <LogOut size={20} />
           {!collapsed && <span className="ml-3">Logout</span>}
         </button>

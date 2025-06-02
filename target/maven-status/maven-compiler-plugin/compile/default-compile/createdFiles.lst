@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 com\university\app\exception\GlobalExceptionHandler.class
 com\university\app\model\Program.class
 com\university\app\controller\DashboardController.class
@@ -29,3 +30,7 @@ com\university\app\service\UserService.class
 com\university\app\repository\StudentRepository.class
 com\university\app\service\ProgramService.class
 com\university\app\controller\ProgramController.class
+=======
+com\university\app\controller\AdminController.class
+com\university\app\service\StudentService.class
+>>>>>>> 47f4fab (Updated with new features)
