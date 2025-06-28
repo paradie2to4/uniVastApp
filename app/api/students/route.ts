@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const BASE_URL = "http://localhost:8080/api/students";
+const BASE_URL = "http://localhost:8081/api/students";
 
 interface Student {
   id: number;

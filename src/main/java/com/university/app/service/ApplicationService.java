@@ -9,30 +9,21 @@ import com.university.app.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-<<<<<<< HEAD
-=======
 import org.springframework.beans.factory.annotation.Value;
->>>>>>> 47f4fab (Updated with new features)
 
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-<<<<<<< HEAD
-=======
 import java.nio.file.Path;
 import java.nio.file.Paths;
->>>>>>> 47f4fab (Updated with new features)
 
 @Service
 public class ApplicationService {
 
-<<<<<<< HEAD
-=======
     @Value("${app.upload.dir:./uploads}") // Define base upload directory, default to ./uploads
     private String baseUploadDir;
 
->>>>>>> 47f4fab (Updated with new features)
     private final ApplicationRepository applicationRepository;
     private final StudentService studentService;
     private final ProgramService programService;
@@ -82,15 +73,10 @@ public class ApplicationService {
         application.setUniversity(program.getUniversity());
         application.setPersonalStatement(personalStatement);
         application.setStatus(ApplicationStatus.PENDING);
-<<<<<<< HEAD
-        application.setSubmissionDate(LocalDateTime.now());
-        application.setLastUpdated(LocalDateTime.now());
-=======
         
         // Set submission and last updated dates to the current time
         application.setSubmissionDate(java.time.LocalDateTime.now());
         application.setLastUpdated(java.time.LocalDateTime.now());
->>>>>>> 47f4fab (Updated with new features)
         
         return applicationRepository.save(application);
     }
@@ -125,24 +111,6 @@ public class ApplicationService {
     public long countApplicationsByStatus(String status) {
         return applicationRepository.countByStatus(ApplicationStatus.valueOf(status));
     }
-<<<<<<< HEAD
-    public String saveFile(Long applicationId, MultipartFile file) throws IOException {
-        Application app = getApplicationById(applicationId);
-
-        String uploadDir = "uploads/applications/" + applicationId;
-        String filePath = uploadDir + "/" + file.getOriginalFilename();
-
-        File directory = new File(uploadDir);
-        if (!directory.exists()) directory.mkdirs();
-
-        File destinationFile = new File(filePath);
-        file.transferTo(destinationFile);
-
-        app.setUploadedFilePath(filePath);
-        applicationRepository.save(app);
-
-        return filePath;
-=======
 
     public void uploadFile(Long applicationId, MultipartFile file) throws IOException {
         // Fetch the application by ID to ensure we have the latest entity state
@@ -178,7 +146,6 @@ public class ApplicationService {
         
         // Save the updated application entity
         applicationRepository.save(application);
->>>>>>> 47f4fab (Updated with new features)
     }
 
 }

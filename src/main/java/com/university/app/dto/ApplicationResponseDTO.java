@@ -7,12 +7,18 @@ public class ApplicationResponseDTO {
     private String status;
     private String personalStatement;
     private String uploadedFilePath;
+    private String feedback;
+    private String submissionDate;
+    private String lastUpdated;
 
     // Include simplified program info
     private ProgramDTO program;
 
     // Include simplified student info
     private StudentDTO student;
+    
+    // Include simplified university info at the top level
+    private UniversityDTO university;
 
     // Getters and Setters for ApplicationResponseDTO
     public Long getId() {
@@ -47,6 +53,30 @@ public class ApplicationResponseDTO {
         this.uploadedFilePath = uploadedFilePath;
     }
 
+    public String getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(String feedback) {
+        this.feedback = feedback;
+    }
+
+    public String getSubmissionDate() {
+        return submissionDate;
+    }
+
+    public void setSubmissionDate(String submissionDate) {
+        this.submissionDate = submissionDate;
+    }
+
+    public String getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(String lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
     public ProgramDTO getProgram() {
         return program;
     }
@@ -61,6 +91,14 @@ public class ApplicationResponseDTO {
 
     public void setStudent(StudentDTO student) {
         this.student = student;
+    }
+
+    public UniversityDTO getUniversity() {
+        return university;
+    }
+
+    public void setUniversity(UniversityDTO university) {
+        this.university = university;
     }
 
     // Inner DTOs for related entities (only include necessary fields)

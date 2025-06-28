@@ -12,12 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.io.Resource;
-<<<<<<< HEAD
-
-import java.io.FileNotFoundException;
-import java.nio.file.Path;
-
-=======
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -26,13 +20,10 @@ import com.university.app.exception.ResourceNotFoundException;
 
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
->>>>>>> 47f4fab (Updated with new features)
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-<<<<<<< HEAD
-=======
 import java.util.HashMap;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
@@ -41,7 +32,6 @@ import com.university.app.dto.ApplicationResponseDTO;
 import com.university.app.dto.ApplicationResponseDTO.ProgramDTO;
 import com.university.app.dto.ApplicationResponseDTO.UniversityDTO;
 import com.university.app.dto.ApplicationResponseDTO.StudentDTO;
->>>>>>> 47f4fab (Updated with new features)
 
 @RestController
 @RequestMapping("/api/applications")
@@ -56,55 +46,6 @@ public class ApplicationController {
     }
 
     @GetMapping
-<<<<<<< HEAD
-    public ResponseEntity<List<Application>> getAllApplications() {
-        List<Application> applications = applicationService.getAllApplications();
-        return new ResponseEntity<>(applications, HttpStatus.OK);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Application> getApplicationById(@PathVariable Long id) {
-        Application application = applicationService.getApplicationById(id);
-        return new ResponseEntity<>(application, HttpStatus.OK);
-    }
-
-    @GetMapping("/student/{studentId}")
-    public ResponseEntity<List<Application>> getApplicationsByStudentId(@PathVariable Long studentId) {
-        List<Application> applications = applicationService.getApplicationsByStudentId(studentId);
-        return new ResponseEntity<>(applications, HttpStatus.OK);
-    }
-
-    @GetMapping("/university/{universityId}")
-    public ResponseEntity<List<Application>> getApplicationsByUniversityId(@PathVariable Long universityId) {
-        List<Application> applications = applicationService.getApplicationsByUniversityId(universityId);
-        return new ResponseEntity<>(applications, HttpStatus.OK);
-    }
-
-    @GetMapping("/program/{programId}")
-    public ResponseEntity<List<Application>> getApplicationsByProgramId(@PathVariable Long programId) {
-        List<Application> applications = applicationService.getApplicationsByProgramId(programId);
-        return new ResponseEntity<>(applications, HttpStatus.OK);
-    }
-
-    @GetMapping("/status/{status}")
-    public ResponseEntity<List<Application>> getApplicationsByStatus(@PathVariable ApplicationStatus status) {
-        List<Application> applications = applicationService.getApplicationsByStatus(status);
-        return new ResponseEntity<>(applications, HttpStatus.OK);
-    }
-
-    @PostMapping
-    public ResponseEntity<Application> createApplication(@Valid @RequestBody Map<String, Object> request) {
-        Long studentId = Long.valueOf(request.get("studentId").toString());
-        Long programId = Long.valueOf(request.get("programId").toString());
-        String personalStatement = (String) request.get("personalStatement");
-        
-        Application newApplication = applicationService.createApplication(studentId, programId, personalStatement);
-        return new ResponseEntity<>(newApplication, HttpStatus.CREATED);
-    }
-
-    @PutMapping("/{id}/status")
-    public ResponseEntity<Application> updateApplicationStatus(
-=======
     public ResponseEntity<?> getAllApplications() {
         List<Application> applications = applicationService.getAllApplications();
         List<Map<String, Object>> simplifiedApplications = applications.stream()
@@ -202,33 +143,68 @@ public class ApplicationController {
     public ResponseEntity<?> getApplicationsByUniversityId(@PathVariable Long universityId) {
         try {
             List<Application> applications = applicationService.getApplicationsByUniversityId(universityId);
-            List<Map<String, Object>> simplified = new ArrayList<>();
             
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
-            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            // Map Application entities to ApplicationResponseDTOs
+            List<ApplicationResponseDTO> responseDTOs = applications.stream()
+                .map(application -> {
+                    ApplicationResponseDTO dto = new ApplicationResponseDTO();
+                    dto.setId(application.getId());
+                    dto.setStatus(application.getStatus().toString());
+                    dto.setPersonalStatement(application.getPersonalStatement());
+                    dto.setFeedback(application.getFeedback());
+                    dto.setUploadedFilePath(application.getUploadedFilePath());
+
+                    // Map related entities to their DTOs and nest them
+                    if (application.getStudent() != null) {
+                        ApplicationResponseDTO.StudentDTO studentDTO = new ApplicationResponseDTO.StudentDTO();
+                        studentDTO.setId(application.getStudent().getId());
+                        studentDTO.setFirstName(application.getStudent().getFirstName());
+                        studentDTO.setLastName(application.getStudent().getLastName());
+                        studentDTO.setEmail(application.getStudent().getEmail());
+                        // Include other student fields if needed in the DTO
+                        dto.setStudent(studentDTO);
+                    }
+
+                    if (application.getProgram() != null) {
+                        ApplicationResponseDTO.ProgramDTO programDTO = new ApplicationResponseDTO.ProgramDTO();
+                        programDTO.setId(application.getProgram().getId());
+                        programDTO.setName(application.getProgram().getName());
+                        // Include other program fields if needed in the DTO
+                        
+                        // Nest UniversityDTO within ProgramDTO if university is available
+                         if (application.getProgram().getUniversity() != null) {
+                            ApplicationResponseDTO.UniversityDTO universityDTO = new ApplicationResponseDTO.UniversityDTO();
+                            universityDTO.setId(application.getProgram().getUniversity().getId());
+                            universityDTO.setName(application.getProgram().getUniversity().getName());
+                             // Include other university fields if needed
+                            programDTO.setUniversity(universityDTO);
+                         }
+                        
+                        dto.setProgram(programDTO);
+                    }
+                    
+                     // Explicitly set the university at the top level as well if needed by frontend
+                     if (application.getUniversity() != null) {
+                        ApplicationResponseDTO.UniversityDTO universityDTO = new ApplicationResponseDTO.UniversityDTO();
+                        universityDTO.setId(application.getUniversity().getId());
+                        universityDTO.setName(application.getUniversity().getName());
+                         // Include other university fields if needed
+                        dto.setUniversity(universityDTO);
+                     }
+
+                    // Format dates as ISO strings using UTC timezone
+                    if (application.getSubmissionDate() != null) {
+                         dto.setSubmissionDate(application.getSubmissionDate().atOffset(java.time.ZoneOffset.UTC).toString());
+                    }
+                    if (application.getLastUpdated() != null) {
+                         dto.setLastUpdated(application.getLastUpdated().atOffset(java.time.ZoneOffset.UTC).toString());
+                    }
+
+                    return dto;
+                })
+                .collect(Collectors.toList());
             
-            for (Application application : applications) {
-                Map<String, Object> appMap = new HashMap<>();
-                appMap.put("id", application.getId());
-                appMap.put("studentId", application.getStudent().getId());
-                appMap.put("studentName", application.getStudent().getFirstName() + " " + application.getStudent().getLastName());
-                appMap.put("studentEmail", application.getStudent().getEmail());
-                appMap.put("studentGpa", application.getStudent().getGpa());
-                appMap.put("programId", application.getProgram().getId());
-                appMap.put("programName", application.getProgram().getName());
-                appMap.put("universityId", application.getUniversity().getId());
-                appMap.put("universityName", application.getUniversity().getName());
-                appMap.put("status", application.getStatus());
-                appMap.put("personalStatement", application.getPersonalStatement());
-                appMap.put("feedback", application.getFeedback());
-                appMap.put("uploadedFilePath", application.getUploadedFilePath());
-                appMap.put("submissionDate", application.getSubmissionDate().toString());
-                appMap.put("lastUpdated", application.getLastUpdated().toString());
-                simplified.add(appMap);
-            }
-            
-            return ResponseEntity.ok(simplified);
+            return ResponseEntity.ok(responseDTOs);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -346,24 +322,12 @@ public class ApplicationController {
 
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateApplicationStatus(
->>>>>>> 47f4fab (Updated with new features)
             @PathVariable Long id,
             @RequestBody Map<String, Object> request) {
         ApplicationStatus status = ApplicationStatus.valueOf((String) request.get("status"));
         String feedback = (String) request.get("feedback");
         
         Application updatedApplication = applicationService.updateApplicationStatus(id, status, feedback);
-<<<<<<< HEAD
-        return new ResponseEntity<>(updatedApplication, HttpStatus.OK);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Application> updateApplication(
-            @PathVariable Long id,
-            @Valid @RequestBody Application applicationDetails) {
-        Application updatedApplication = applicationService.updateApplication(id, applicationDetails);
-        return new ResponseEntity<>(updatedApplication, HttpStatus.OK);
-=======
         Map<String, Object> simplified = new HashMap<>();
         simplified.put("id", updatedApplication.getId());
         simplified.put("status", updatedApplication.getStatus());
@@ -397,7 +361,6 @@ public class ApplicationController {
         simplified.put("universityId", updatedApplication.getProgram().getUniversity().getId());
         simplified.put("universityName", updatedApplication.getProgram().getUniversity().getName());
         return new ResponseEntity<>(simplified, HttpStatus.OK);
->>>>>>> 47f4fab (Updated with new features)
     }
 
     @DeleteMapping("/{id}")
@@ -406,20 +369,6 @@ public class ApplicationController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-<<<<<<< HEAD
-
-    @PostMapping("/{applicationId}/upload")
-    public ResponseEntity<String> uploadFile(
-            @PathVariable Long applicationId,
-            @RequestParam("file") MultipartFile file) {
-        try {
-            String savedFilePath = applicationService.saveFile(applicationId, file);
-            return ResponseEntity.ok("File uploaded successfully: " + savedFilePath);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Upload failed: " + e.getMessage());
-        }
-    }
-=======
     @PostMapping("/{applicationId}/upload")
     public ResponseEntity<?> uploadFile(
             @PathVariable Long applicationId,
@@ -444,7 +393,6 @@ public class ApplicationController {
         }
     }
 
->>>>>>> 47f4fab (Updated with new features)
     @GetMapping("/files/{applicationId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long applicationId) throws IOException {
         Application app = applicationService.getApplicationById(applicationId);
@@ -459,8 +407,4 @@ public class ApplicationController {
             throw new FileNotFoundException("File not found");
         }
     }
-<<<<<<< HEAD
-
-=======
->>>>>>> 47f4fab (Updated with new features)
 }

@@ -1,26 +1,14 @@
 package com.university.app.controller;
 
 import com.university.app.model.Student;
-<<<<<<< HEAD
-import com.university.app.service.StudentService;
-=======
 import com.university.app.dto.StudentProfileDTO;
 import com.university.app.service.StudentService;
 import com.university.app.exception.ResourceNotFoundException;
->>>>>>> 47f4fab (Updated with new features)
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-<<<<<<< HEAD
-
-import java.util.List;
-
-@RestController
-@RequestMapping("/api/students")
-@CrossOrigin(origins = "http://localhost:3000") // In production, restrict this to your frontend domain
-=======
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -32,7 +20,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/students")
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:8080"}) // Allow both frontend origins
->>>>>>> 47f4fab (Updated with new features)
 public class StudentController {
 
     private final StudentService studentService;
@@ -49,11 +36,6 @@ public class StudentController {
     }
 
     @GetMapping("/{id}")
-<<<<<<< HEAD
-    public ResponseEntity<Student> getStudentById(@PathVariable Long id) {
-        Student student = studentService.getStudentById(id);
-        return new ResponseEntity<>(student, HttpStatus.OK);
-=======
     public ResponseEntity<?> getStudentById(@PathVariable Long id) {
         Student student = studentService.getStudentById(id);
         
@@ -84,7 +66,6 @@ public class StudentController {
         }
         
         return ResponseEntity.ok(response);
->>>>>>> 47f4fab (Updated with new features)
     }
 
     @GetMapping("/email/{email}")
@@ -118,8 +99,6 @@ public class StudentController {
         studentService.deleteStudent(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-<<<<<<< HEAD
-=======
 
     // Endpoint for updating student profile
     @PutMapping("/{studentId}/profile")
@@ -242,5 +221,4 @@ public class StudentController {
             return ResponseEntity.internalServerError().body("Error fetching student profile: " + e.getMessage());
         }
     }
->>>>>>> 47f4fab (Updated with new features)
 }

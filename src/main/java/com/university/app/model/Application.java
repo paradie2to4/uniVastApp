@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.university.app.service.EmailService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 
@@ -24,11 +26,7 @@ public class Application {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "program_id")
-<<<<<<< HEAD
     @JsonManagedReference(value = "program-applications")
-=======
-    @JsonIgnore
->>>>>>> 47f4fab (Updated with new features)
     private Program program;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -36,17 +34,6 @@ public class Application {
     @JsonManagedReference(value = "university-applications")
     private University university;
 
-<<<<<<< HEAD
-    public University getUniversity() {
-        return university;
-    }
-
-    public void setUniversity(University university) {
-        this.university = university;
-    }
-
-=======
->>>>>>> 47f4fab (Updated with new features)
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
 
@@ -65,17 +52,9 @@ public class Application {
     @Column(name = "uploaded_file_path")
     private String uploadedFilePath;
 
-<<<<<<< HEAD
-    public String getUploadedFilePath() {
-        return uploadedFilePath;
-    }
+    @Autowired
+    private static EmailService emailService;
 
-    public void setUploadedFilePath(String uploadedFilePath) {
-        this.uploadedFilePath = uploadedFilePath;
-    }
-
-=======
->>>>>>> 47f4fab (Updated with new features)
     // Constructors
     public Application() {
         this.status = ApplicationStatus.PENDING;
@@ -117,8 +96,6 @@ public class Application {
         this.program = program;
     }
 
-<<<<<<< HEAD
-=======
     public University getUniversity() {
         return university;
     }
@@ -127,7 +104,6 @@ public class Application {
         this.university = university;
     }
 
->>>>>>> 47f4fab (Updated with new features)
     public ApplicationStatus getStatus() {
         return status;
     }
@@ -169,8 +145,6 @@ public class Application {
         this.feedback = feedback;
     }
 
-<<<<<<< HEAD
-=======
     public String getUploadedFilePath() {
         return uploadedFilePath;
     }
@@ -179,7 +153,6 @@ public class Application {
         this.uploadedFilePath = uploadedFilePath;
     }
 
->>>>>>> 47f4fab (Updated with new features)
     @JsonProperty("program")
     public Program getProgramData() {
         return program;
@@ -200,5 +173,16 @@ public class Application {
         this.status = newStatus;
         this.feedback = feedback;
         this.lastUpdated = LocalDateTime.now();
+        
+        // Send email notification
+        if (emailService != null && student != null && student.getEmail() != null) {
+            emailService.sendApplicationStatusChanged(
+                student.getEmail(),
+                program != null ? program.getName() : "Unknown Program",
+                university != null ? university.getName() : "Unknown University",
+                newStatus.toString(),
+                feedback
+            );
+        }
     }
 }

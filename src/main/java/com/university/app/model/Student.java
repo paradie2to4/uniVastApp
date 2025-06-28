@@ -1,24 +1,10 @@
 package com.university.app.model;
 
-<<<<<<< HEAD
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-=======
->>>>>>> 47f4fab (Updated with new features)
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-<<<<<<< HEAD
-import java.util.ArrayList;
-import java.util.List;
-
-@Entity
-@Table(name = "students")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-=======
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -31,7 +17,6 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "students")
->>>>>>> 47f4fab (Updated with new features)
 public class Student {
 
     @Id
@@ -60,24 +45,14 @@ public class Student {
     @Column(length = 500)
     private String bio;
 
-<<<<<<< HEAD
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-=======
     @Column(name = "gpa")
     private Double gpa;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
->>>>>>> 47f4fab (Updated with new features)
     private List<Application> applications = new ArrayList<>();
 
     @OneToOne
     @JoinColumn(name = "user_id")
-<<<<<<< HEAD
-    @JsonIgnore
-    private User user;
-
-=======
     @JsonManagedReference
     private User user;
 
@@ -91,7 +66,6 @@ public class Student {
     @Column(columnDefinition = "TEXT") // Use TEXT for potentially longer education descriptions
     private String educationBackground;
 
->>>>>>> 47f4fab (Updated with new features)
     // Constructors
     public Student() {
     }
@@ -138,17 +112,6 @@ public class Student {
         this.email = email;
     }
 
-<<<<<<< HEAD
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-=======
->>>>>>> 47f4fab (Updated with new features)
     public String getProfilePicture() {
         return profilePicture;
     }
@@ -181,8 +144,6 @@ public class Student {
         this.user = user;
     }
 
-<<<<<<< HEAD
-=======
     public String getPassword() {
         return password;
     }
@@ -224,7 +185,6 @@ public class Student {
         this.educationBackground = educationBackground;
     }
 
->>>>>>> 47f4fab (Updated with new features)
     // Helper methods
     public void addApplication(Application application) {
         applications.add(application);
@@ -237,10 +197,6 @@ public class Student {
     }
 
     // Full name utility method
-<<<<<<< HEAD
-    @JsonProperty("fullName")
-=======
->>>>>>> 47f4fab (Updated with new features)
     public String getFullName() {
         return firstName + " " + lastName;
     }

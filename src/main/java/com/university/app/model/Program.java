@@ -1,12 +1,13 @@
 package com.university.app.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,46 +23,48 @@ public class Program {
     @Size(max = 100, message = "Program name cannot exceed 100 characters")
     private String name;
 
-    @Size(max = 500, message = "Description cannot exceed 500 characters")
-    @Column(length = 500)
-    private String description;
-
+    @NotBlank(message = "Degree type is required")
+    @Size(max = 50, message = "Degree type cannot exceed 50 characters")
     private String degree;
 
-    private String requirements;
-    
+    @NotBlank(message = "Duration is required")
+    @Size(max = 50, message = "Duration cannot exceed 50 characters")
     private String duration;
-    
-    private double tuitionFee;
+
+    @NotNull(message = "Tuition fee is required")
+    @Positive(message = "Tuition fee must be positive")
+    private Double tuitionFee;
+
+    @Size(max = 1000, message = "Description cannot exceed 1000 characters")
+    @Column(length = 1000)
+    private String description;
+
+    @Size(max = 1000, message = "Requirements cannot exceed 1000 characters")
+    @Column(length = 1000)
+    private String requirements;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "university_id")
-    @JsonManagedReference(value = "program-university")
+    @JsonBackReference(value = "program-university")
     private University university;
 
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
-<<<<<<< HEAD
-    @JsonBackReference(value = "program-applications")
-=======
-    @JsonIgnore
->>>>>>> 47f4fab (Updated with new features)
+    @JsonManagedReference(value = "program-applications")
     private List<Application> applications = new ArrayList<>();
+
+    private int applicationCount = 0;
 
     // Constructors
     public Program() {
     }
 
-<<<<<<< HEAD
-    public Program(String name, String description, String degree,String requirements, String duration, double tuitionFee) {
-=======
-    public Program(String name, String description, String degree, String requirements, String duration, double tuitionFee) {
->>>>>>> 47f4fab (Updated with new features)
+    public Program(String name, String degree, String duration, Double tuitionFee, String description, String requirements) {
         this.name = name;
-        this.description = description;
         this.degree = degree;
-        this.requirements = requirements;
         this.duration = duration;
         this.tuitionFee = tuitionFee;
+        this.description = description;
+        this.requirements = requirements;
     }
 
     // Getters and Setters
@@ -73,28 +76,12 @@ public class Program {
         this.id = id;
     }
 
-    public String getRequirements() {
-        return requirements;
-    }
-
-    public void setRequirements(String requirements) {
-        this.requirements = requirements;
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getDegree() {
@@ -113,12 +100,28 @@ public class Program {
         this.duration = duration;
     }
 
-    public double getTuitionFee() {
+    public Double getTuitionFee() {
         return tuitionFee;
     }
 
-    public void setTuitionFee(double tuitionFee) {
+    public void setTuitionFee(Double tuitionFee) {
         this.tuitionFee = tuitionFee;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getRequirements() {
+        return requirements;
+    }
+
+    public void setRequirements(String requirements) {
+        this.requirements = requirements;
     }
 
     public University getUniversity() {
@@ -137,19 +140,24 @@ public class Program {
         this.applications = applications;
     }
 
-    @JsonProperty("university")
-    public University getUniversityData() {
-        return university;
+    public int getApplicationCount() {
+        return applicationCount;
     }
 
-<<<<<<< HEAD
-    @JsonProperty("applications")
-    public List<Application> getApplicationsData() {
-        return applications;
-=======
-    @JsonProperty("applicationCount")
-    public int getApplicationCount() {
-        return applications != null ? applications.size() : 0;
->>>>>>> 47f4fab (Updated with new features)
+    public void setApplicationCount(int applicationCount) {
+        this.applicationCount = applicationCount;
+    }
+
+    // Helper methods
+    public void addApplication(Application application) {
+        applications.add(application);
+        application.setProgram(this);
+        this.applicationCount++;
+    }
+
+    public void removeApplication(Application application) {
+        applications.remove(application);
+        application.setProgram(null);
+        this.applicationCount--;
     }
 }

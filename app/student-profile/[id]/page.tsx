@@ -5,13 +5,6 @@ import { useParams } from 'next/navigation';
 import { Card, CardContent, Typography, Grid, Avatar, Box, CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-// Helper function to get initials
-const getInitials = (firstName?: string | null, lastName?: string | null): string => {
-  const firstInitial = firstName ? firstName.charAt(0) : '';
-  const lastInitial = lastName ? lastName.charAt(0) : '';
-  return (firstInitial + lastInitial).toUpperCase();
-};
-
 const StyledCard = styled(Card)(({ theme }) => ({
   marginBottom: theme.spacing(2),
   boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
@@ -90,17 +83,10 @@ export default function StudentProfileView() {
         <Grid item xs={12} md={4}>
           <StyledCard>
             <CardContent sx={{ textAlign: 'center' }}>
-              {/* Display profile picture or initials */}
-              {student?.profilePicture ? (
-                <ProfileAvatar
-                  src={student.profilePicture || '/default-avatar.png'}
-                  alt={`${student.firstName} ${student.lastName}'s profile picture`}
-                />
-              ) : (
-                <ProfileAvatar sx={{ bgcolor: 'purple', color: 'white' }}>
-                  {getInitials(student?.firstName, student?.lastName)}
-                </ProfileAvatar>
-              )}
+              <ProfileAvatar
+                src={student.profilePicture || '/default-avatar.png'}
+                alt={`${student.firstName} ${student.lastName}`}
+              />
               <Typography variant="h5" gutterBottom>
                 {student.firstName} {student.lastName}
               </Typography>

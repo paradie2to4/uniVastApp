@@ -1,16 +1,26 @@
 package com.university.app;
 
 import com.university.app.model.*;
+import com.university.app.model.User;
+import com.university.app.model.UserRole;
 import com.university.app.service.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import com.university.app.service.UserService;
+import com.university.app.service.StudentService;
+import com.university.app.service.UniversityService;
+import com.university.app.service.ProgramService;
+import com.university.app.service.ApplicationService;
 
 import java.util.List;
+import java.time.LocalDate;
 
 @SpringBootApplication
+@EnableScheduling
 public class UniversityApplication {
 
     public static void main(String[] args) {
@@ -19,7 +29,6 @@ public class UniversityApplication {
 
     @Bean
     public CommandLineRunner initData(
-<<<<<<< HEAD
             UserService userService,
             StudentService studentService,
             UniversityService universityService,
@@ -28,94 +37,14 @@ public class UniversityApplication {
     ) {
         return args -> {
             // 1. Create and link users
-            User studentUser = createStudentUser(userService);
-            User universityUser = createUniversityUser(userService);
             createAdminUser(userService);
-
-            // 2. Create Program for the university
-            University university = universityUser.getUniversity();
-
-            Program program = new Program();
-            program.setName("Bachelor of Computer Science");
-            program.setDescription("A program focused on software engineering and AI.");
-            program.setUniversity(university);
-            program.setDegree("Computer Science");
-            program.setRequirements("Maths, Physics background required.");
-            program.setDuration("4 years");
-            Program savedProgram = programService.createProgram(1L,program);
-            System.out.println("Created program: " + savedProgram.getName());
-
-            // 3. Create an Application for the student to the program
-            Student student = studentUser.getStudent();
-
-            Application application = new Application();
-            application.setStudent(student);
-            application.setProgram(savedProgram);
-            application.setPersonalStatement("I'm passionate about computing and solving problems.");
-            application.setStatus(ApplicationStatus.PENDING);
-
-            Application savedApplication = applicationService.createApplication(
-                    student.getId(),
-                    savedProgram.getId(),
-                    application.getPersonalStatement()
-            );
-            System.out.println("Created application ID: " + savedApplication.getId());
+            // Add calls to create initial data for students, universities, programs, applications if needed
+            // Example:
+            // createInitialStudents(studentService);
+            // createInitialUniversities(universityService);
         };
     }
 
-    private User createStudentUser(UserService userService) {
-        String username = "student1";
-        if (!userService.existsByUsername(username)) {
-            User user = new User();
-            user.setUsername(username);
-            user.setEmail("student1@example.com");
-            user.setPassword("password123");
-            user.setRole(UserRole.STUDENT);
-
-            Student student = new Student();
-            student.setFirstName("SHAMI");
-            student.setLastName("Paradie");
-            student.setEmail("shami4real@example.com");
-            student.setUser(user);
-
-            user.setStudent(student);
-
-            return userService.createUser(user);
-        }
-        return userService.getUserByUsername(username);
-    }
-
-    private User createUniversityUser(UserService userService) {
-        String username = "university1";
-        if (!userService.existsByUsername(username)) {
-            User user = new User();
-            user.setUsername(username);
-            user.setEmail("university1@example.com");
-            user.setPassword("password123");
-            user.setRole(UserRole.UNIVERSITY);
-
-            University university = new University();
-            university.setName("Springfield University");
-            university.setLocation("Kigali, Rwanda");
-            university.setAcceptanceRate(50);
-            university.setUser(user);
-
-            user.setUniversity(university);
-
-            return userService.createUser(user);
-        }
-        return userService.getUserByUsername(username);
-    }
-
-=======
-            UserService userService
-    ) {
-        return args -> {
-            createAdminUser(userService);
-        };
-    }
-
->>>>>>> 47f4fab (Updated with new features)
     private void createAdminUser(UserService userService) {
         String username = "admin";
         if (!userService.existsByUsername(username)) {
@@ -128,11 +57,9 @@ public class UniversityApplication {
             userService.createUser(user);
             System.out.println("Admin user created: " + username);
         }
-<<<<<<< HEAD
-
     }
-
-=======
-    }
->>>>>>> 47f4fab (Updated with new features)
+    
+    // You can add other methods here for creating initial students, universities, etc.
+    // private void createInitialStudents(StudentService studentService) { ... }
+    // private void createInitialUniversities(UniversityService universityService) { ... }
 }

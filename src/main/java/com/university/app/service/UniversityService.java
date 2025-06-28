@@ -5,15 +5,12 @@ import com.university.app.repository.UniversityRepository;
 import com.university.app.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-<<<<<<< HEAD
-=======
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
->>>>>>> 47f4fab (Updated with new features)
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,23 +20,17 @@ import java.util.Map;
 public class UniversityService {
 
     private final UniversityRepository universityRepository;
-<<<<<<< HEAD
-=======
     private final String UPLOAD_DIR = "uploads/logos/";
->>>>>>> 47f4fab (Updated with new features)
 
     @Autowired
     public UniversityService(UniversityRepository universityRepository) {
         this.universityRepository = universityRepository;
-<<<<<<< HEAD
-=======
         // Create upload directory if it doesn't exist
         try {
             Files.createDirectories(Paths.get(UPLOAD_DIR));
         } catch (IOException e) {
             e.printStackTrace();
         }
->>>>>>> 47f4fab (Updated with new features)
     }
 
     public List<University> getAllUniversities() {
@@ -59,18 +50,6 @@ public class UniversityService {
         return universityRepository.save(university);
     }
 
-<<<<<<< HEAD
-    public University updateUniversity(Long id, University universityDetails) {
-        University university = getUniversityById(id);
-        
-        university.setName(universityDetails.getName());
-        university.setLocation(universityDetails.getLocation());
-        university.setDescription(universityDetails.getDescription());
-        university.setAcceptanceRate(universityDetails.getAcceptanceRate());
-        university.setLogo(universityDetails.getLogo());
-        
-        return universityRepository.save(university);
-=======
     public University updateUniversity(University university) {
         if (!universityRepository.existsById(university.getId())) {
             throw new ResourceNotFoundException("University not found with id: " + university.getId());
@@ -79,21 +58,36 @@ public class UniversityService {
         University existingUniversity = getUniversityById(university.getId());
         
         // Update all fields
+        if (university.getName() != null) {
         existingUniversity.setName(university.getName());
+        }
+        if (university.getLocation() != null) {
         existingUniversity.setLocation(university.getLocation());
+        }
+        if (university.getDescription() != null) {
         existingUniversity.setDescription(university.getDescription());
+        }
+        if (university.getAcceptanceRate() >= 0 && university.getAcceptanceRate() <= 100) {
         existingUniversity.setAcceptanceRate(university.getAcceptanceRate());
+        }
         // Only update the logo if a new logo is provided in the update request
         if (university.getLogo() != null && !university.getLogo().isEmpty()) {
         existingUniversity.setLogo(university.getLogo());
         }
+        if (university.getWebsite() != null) {
         existingUniversity.setWebsite(university.getWebsite());
+        }
+        if (university.getPhoneNumber() != null) {
         existingUniversity.setPhoneNumber(university.getPhoneNumber());
+        }
+        if (university.getFoundedYear() != null) {
         existingUniversity.setFoundedYear(university.getFoundedYear());
+        }
+        if (university.getAccreditation() != null) {
         existingUniversity.setAccreditation(university.getAccreditation());
+        }
         
         return universityRepository.save(existingUniversity);
->>>>>>> 47f4fab (Updated with new features)
     }
 
     public void deleteUniversity(Long id) {
@@ -147,13 +141,17 @@ public class UniversityService {
     public long countAll() {
         return universityRepository.count();
     }
-    public University getFeaturedUniversities(){
-        return universityRepository.findAll().stream().findFirst().get();
+
+    public University getFeaturedUniversities() {
+        return universityRepository.findAll().stream()
+            .findFirst()
+            .orElseThrow(() -> new ResourceNotFoundException("No universities found"));
     }
 
     public List<University> getAllLocations() {
         return universityRepository.findAll();
     }
+
     public List<University> getUniversitiesByName(String name) {
         return universityRepository.findByNameContainingIgnoreCase(name);
     }
@@ -162,12 +160,29 @@ public class UniversityService {
         return universityRepository.findByLocationContainingIgnoreCase(location);
     }
 
-<<<<<<< HEAD
-=======
     public String uploadLogo(MultipartFile file) {
         try {
+            // Validate file
+            if (file == null || file.isEmpty()) {
+                throw new IllegalArgumentException("File cannot be empty");
+            }
+
+            // Validate file type
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                throw new IllegalArgumentException("Only image files are allowed");
+            }
+
+            // Validate file size (max 5MB)
+            if (file.getSize() > 5 * 1024 * 1024) {
+                throw new IllegalArgumentException("File size cannot exceed 5MB");
+            }
+
             // Generate unique filename
             String originalFilename = file.getOriginalFilename();
+            if (originalFilename == null) {
+                throw new IllegalArgumentException("Invalid filename");
+            }
             String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
             String filename = UUID.randomUUID().toString() + extension;
             
@@ -176,10 +191,9 @@ public class UniversityService {
             Files.copy(file.getInputStream(), filepath);
             
             // Return the URL path to the file
-            return "/api/uploads/logos/" + filename;
+            return "/api/universities/uploads/logos/" + filename;
         } catch (IOException e) {
             throw new RuntimeException("Failed to upload logo", e);
         }
     }
->>>>>>> 47f4fab (Updated with new features)
 }

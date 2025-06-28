@@ -1,29 +1,15 @@
 package com.university.app.controller;
 
-<<<<<<< HEAD
-import com.university.app.model.User;
-import com.university.app.model.UserRole;
-import com.university.app.model.Student;
-import com.university.app.model.University;
-import com.university.app.service.UserService;
-import com.university.app.repository.UniversityRepository;
-=======
 import com.university.app.dto.SignupRequest;
 import com.university.app.model.*;
 import com.university.app.repository.UniversityRepository;
 import com.university.app.service.UserService;
->>>>>>> 47f4fab (Updated with new features)
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-<<<<<<< HEAD
-
-import java.util.List;
-import java.util.Map;
-=======
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,32 +17,22 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
->>>>>>> 47f4fab (Updated with new features)
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "http://localhost:3000") // In production, restrict this to your frontend domain
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class UserController {
-<<<<<<< HEAD
-
-    private final UserService userService;
-    private final UniversityRepository universityRepository;
-=======
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
     private final UniversityRepository universityRepository;
     private final BCryptPasswordEncoder passwordEncoder;
->>>>>>> 47f4fab (Updated with new features)
 
     @Autowired
     public UserController(UserService userService, UniversityRepository universityRepository) {
         this.userService = userService;
         this.universityRepository = universityRepository;
-<<<<<<< HEAD
-=======
         this.passwordEncoder = new BCryptPasswordEncoder();
->>>>>>> 47f4fab (Updated with new features)
     }
 
     @GetMapping
@@ -89,59 +65,6 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-<<<<<<< HEAD
-    @PostMapping
-    public ResponseEntity<?> createUser(@Valid @RequestBody Map<String, Object> userData) {
-        // Extract user data
-        String username = (String) userData.get("username");
-        String email = (String) userData.get("email");
-        String password = (String) userData.get("password");
-        String role = (String) userData.get("role");
-
-        // Check if username or email already exists
-        if (userService.existsByUsername(username)) {
-            return new ResponseEntity<>("Username is already taken", HttpStatus.BAD_REQUEST);
-        }
-        if (userService.existsByEmail(email)) {
-            return new ResponseEntity<>("Email is already in use", HttpStatus.BAD_REQUEST);
-        }
-
-        // Create user object
-        User user = new User();
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setPassword(password);
-        user.setRole(UserRole.valueOf(role));
-
-        // Create related entity based on role
-        if (UserRole.STUDENT.name().equals(role)) {
-            String firstName = (String) userData.get("firstName");
-            String lastName = (String) userData.get("lastName");
-
-            // Create Student object and set user
-            Student student = new Student();
-            student.setFirstName(firstName);
-            student.setLastName(lastName);
-            student.setEmail(email);
-            student.setUser(user);  // Set the user in the student entity
-            user.setStudent(student);
-        } else if (UserRole.UNIVERSITY.name().equals(role)) {
-            String universityName = (String) userData.get("universityName");
-            String universityLocation = (String) userData.get("universityLocation");
-            // Create University object and set user
-            University university = new University();
-            university.setName(universityName);
-            university.setUser(user);
-            university.setLocation(universityLocation);// Set the user in the university entity
-            user.setUniversity(university);
-        }
-
-        // Save user (which will also save related Student/University)
-        User newUser = userService.createUser(user);
-
-        // Return the newly created user
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
-=======
     @PostMapping("")
     public ResponseEntity<?> signup(@Valid @RequestBody SignupRequest signupRequest) {
         try {
@@ -235,7 +158,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", "Error creating user: " + e.getMessage()));
         }
->>>>>>> 47f4fab (Updated with new features)
     }
 
     @PutMapping("/{id}")
@@ -260,39 +182,6 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
-<<<<<<< HEAD
-        String usernameOrEmail = credentials.get("username");
-        String password = credentials.get("password");
-
-        User user = userService.getUserByUsername(usernameOrEmail);
-        if (user == null) {
-            user = userService.getUserByEmail(usernameOrEmail);
-        }
-
-        if (user == null || !user.getPassword().equals(password)) {
-            return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
-        }
-
-        userService.updateLastLogin(user.getId());
-
-        final User finalUser = user;
-        // If university, return university id as 'id'
-        if (finalUser.getRole() == UserRole.UNIVERSITY) {
-            return universityRepository.findByUserId(finalUser.getId())
-                .<ResponseEntity<?>>map(university -> {
-                    Map<String, Object> response = new java.util.HashMap<>();
-                    response.put("id", university.getId()); // university id
-                    response.put("userId", finalUser.getId());
-                    response.put("role", finalUser.getRole());
-                    response.put("universityName", university.getName());
-                    response.put("logo", university.getLogo());
-                    // add more fields as needed
-                    return new ResponseEntity<>(response, HttpStatus.OK);
-                })
-                .orElseGet(() -> new ResponseEntity<>("University not found for user", HttpStatus.NOT_FOUND));
-        }
-        return new ResponseEntity<>(user, HttpStatus.OK);
-=======
         try {
             String usernameOrEmail = credentials.get("username");
             String password = credentials.get("password");
@@ -337,25 +226,23 @@ public class UserController {
             // Create a minimal response with only essential data
             Map<String, Object> response = new HashMap<>();
             response.put("userId", user.getId());
+            response.put("username", user.getUsername());
+            response.put("email", user.getEmail());
             response.put("role", user.getRole().toString());
             
-            if (user.getRole() == UserRole.STUDENT && user.getStudent() != null) {
+            if (user.getStudent() != null) {
                 response.put("studentId", user.getStudent().getId());
-            } else if (user.getRole() == UserRole.UNIVERSITY && user.getUniversity() != null) {
-                // Include the university ID for university users
+            }
+            
+            if (user.getUniversity() != null) {
                 response.put("universityId", user.getUniversity().getId());
-                 // Include university name and logo for university dashboard header
-                response.put("universityName", user.getUniversity().getName());
-                response.put("logo", user.getUniversity().getLogo());
             }
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            logger.error("Error during login: ", e);
+            logger.error("Login error: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", "Error during login: " + e.getMessage()));
         }
->>>>>>> 47f4fab (Updated with new features)
     }
-
 }

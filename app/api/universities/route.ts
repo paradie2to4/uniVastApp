@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const BASE_URL = "http://localhost:8080/api/universities";
+const BASE_URL = "http://localhost:8081/api/universities";
 
 // GET Method
 export async function GET() {

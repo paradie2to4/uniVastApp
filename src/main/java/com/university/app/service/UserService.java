@@ -35,13 +35,6 @@ public class UserService {
     }
 
     public User getUserByUsername(String username) {
-<<<<<<< HEAD
-        return userRepository.findByUsername(username).orElse(null);
-    }
-
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElse(null);
-=======
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
     }
@@ -49,7 +42,6 @@ public class UserService {
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
->>>>>>> 47f4fab (Updated with new features)
     }
 
     public List<User> getUsersByRole(UserRole role) {
@@ -59,40 +51,24 @@ public class UserService {
     public User createUser(User user) {
         // In a real application, you would hash the password here
         User savedUser = userRepository.save(user);
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 47f4fab (Updated with new features)
         // Save related entities if they exist
         if (user.getStudent() != null) {
             user.getStudent().setUser(savedUser);
             studentService.createStudent(user.getStudent());
         }
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 47f4fab (Updated with new features)
         if (user.getUniversity() != null) {
             user.getUniversity().setUser(savedUser);
             universityService.createUniversity(user.getUniversity());
         }
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 47f4fab (Updated with new features)
         return savedUser;
     }
 
     public User updateUser(Long id, User userDetails) {
         User user = getUserById(id);
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 47f4fab (Updated with new features)
         user.setUsername(userDetails.getUsername());
         user.setEmail(userDetails.getEmail());
         // Only update password if it's provided
@@ -102,11 +78,7 @@ public class UserService {
         }
         user.setRole(userDetails.getRole());
         user.setActive(userDetails.isActive());
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 47f4fab (Updated with new features)
         return userRepository.save(user);
     }
 
@@ -128,8 +100,4 @@ public class UserService {
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
-<<<<<<< HEAD
-
-=======
->>>>>>> 47f4fab (Updated with new features)
 }

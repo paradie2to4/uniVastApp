@@ -2,26 +2,12 @@ package com.university.app.controller;
 
 import com.university.app.model.University;
 import com.university.app.service.UniversityService;
-<<<<<<< HEAD
-=======
 import com.university.app.exception.ResourceNotFoundException;
->>>>>>> 47f4fab (Updated with new features)
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-<<<<<<< HEAD
-
-import java.util.List;
-
-@RestController
-@RequestMapping("/api/universities")
-@CrossOrigin(origins = "http://localhost:3000") // In production, restrict this to your frontend domain
-public class UniversityController {
-
-    private final UniversityService universityService;
-=======
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.io.Resource;
@@ -44,45 +30,10 @@ public class UniversityController {
 
     private final UniversityService universityService;
     private final Path fileStorageLocation;
->>>>>>> 47f4fab (Updated with new features)
 
     @Autowired
     public UniversityController(UniversityService universityService) {
         this.universityService = universityService;
-<<<<<<< HEAD
-    }
-
-    @GetMapping
-    public ResponseEntity<List<University>> getAllUniversities() {
-        List<University> universities = universityService.getAllUniversities();
-        return new ResponseEntity<>(universities, HttpStatus.OK);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<University> getUniversityById(@PathVariable Long id) {
-        University university = universityService.getUniversityById(id);
-        return new ResponseEntity<>(university, HttpStatus.OK);
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<University>> searchUniversities(@RequestParam String query) {
-        List<University> universities = universityService.searchUniversities(query);
-        return new ResponseEntity<>(universities, HttpStatus.OK);
-    }
-
-    @PostMapping
-    public ResponseEntity<University> createUniversity(@Valid @RequestBody University university) {
-        University newUniversity = universityService.createUniversity(university);
-        return new ResponseEntity<>(newUniversity, HttpStatus.CREATED);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<University> updateUniversity(
-            @PathVariable Long id,
-            @Valid @RequestBody University universityDetails) {
-        University updatedUniversity = universityService.updateUniversity(id, universityDetails);
-        return new ResponseEntity<>(updatedUniversity, HttpStatus.OK);
-=======
         // Initialize file storage location based on the upload directory used in UniversityService
         this.fileStorageLocation = Paths.get("uploads/logos/").toAbsolutePath().normalize();
         try {
@@ -175,7 +126,6 @@ public class UniversityController {
         simplified.put("accreditation", updatedUniversity.getAccreditation());
         simplified.put("acceptanceRate", updatedUniversity.getAcceptanceRate());
         return new ResponseEntity<>(simplified, HttpStatus.OK);
->>>>>>> 47f4fab (Updated with new features)
     }
 
     @DeleteMapping("/{id}")
@@ -183,8 +133,6 @@ public class UniversityController {
         universityService.deleteUniversity(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-<<<<<<< HEAD
-=======
 
     @PutMapping(value = "/{id}/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateUniversityProfile(
@@ -297,5 +245,4 @@ public class UniversityController {
             throw new RuntimeException("File not found " + filename, ex);
         }
     }
->>>>>>> 47f4fab (Updated with new features)
 }

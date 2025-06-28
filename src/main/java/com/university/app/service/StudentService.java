@@ -7,15 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
-<<<<<<< HEAD
-=======
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
->>>>>>> 47f4fab (Updated with new features)
 
 import java.util.HashMap;
 import java.util.List;
@@ -56,15 +53,6 @@ public class StudentService {
 
     public Student updateStudent(Long id, Student studentDetails) {
         Student student = getStudentById(id);
-<<<<<<< HEAD
-        
-        student.setFirstName(studentDetails.getFirstName());
-        student.setLastName(studentDetails.getLastName());
-        student.setEmail(studentDetails.getEmail());
-        student.setBio(studentDetails.getBio());
-        student.setProfilePicture(studentDetails.getProfilePicture());
-        
-=======
 
         // Update fields based on studentDetails, ensure existing values are kept if not provided
         if (studentDetails.getFirstName() != null && !studentDetails.getFirstName().isEmpty()) {
@@ -73,35 +61,36 @@ public class StudentService {
         if (studentDetails.getLastName() != null && !studentDetails.getLastName().isEmpty()) {
             student.setLastName(studentDetails.getLastName());
         }
-        // Email is typically not updated via profile form, but uncomment if needed
-        // if (studentDetails.getEmail() != null && !studentDetails.getEmail().isEmpty()) {
-        //     student.setEmail(studentDetails.getEmail());
-        // }
-        if (studentDetails.getBio() != null) { // Allow setting bio to empty string
+        if (studentDetails.getBio() != null) {
             student.setBio(studentDetails.getBio());
         }
-        // GPA can be set to null or updated
-        student.setGpa(studentDetails.getGpa());
+        
+        // Validate GPA range
+        if (studentDetails.getGpa() != null) {
+            if (studentDetails.getGpa() < 0 || studentDetails.getGpa() > 4.0) {
+                throw new IllegalArgumentException("GPA must be between 0 and 4.0");
+            }
+            student.setGpa(studentDetails.getGpa());
+        }
 
         // Only update profile picture if a new one is provided
         if (studentDetails.getProfilePicture() != null && !studentDetails.getProfilePicture().isEmpty()) {
-             student.setProfilePicture(studentDetails.getProfilePicture());
-        } else if (studentDetails.getProfilePicture() == null) { // If explicitly set to null from frontend, remove it
-             student.setProfilePicture(null);
+            student.setProfilePicture(studentDetails.getProfilePicture());
+        } else if (studentDetails.getProfilePicture() == null) {
+            student.setProfilePicture(null);
         }
 
         // Update new fields, checking if they are provided
         if (studentDetails.getDateOfBirth() != null) {
-             student.setDateOfBirth(studentDetails.getDateOfBirth());
+            student.setDateOfBirth(studentDetails.getDateOfBirth());
         }
-        if (studentDetails.getLocation() != null) { // Allow setting location to empty string
-             student.setLocation(studentDetails.getLocation());
+        if (studentDetails.getLocation() != null) {
+            student.setLocation(studentDetails.getLocation());
         }
-         if (studentDetails.getEducationBackground() != null) { // Allow setting educationBackground to empty string
-             student.setEducationBackground(studentDetails.getEducationBackground());
+        if (studentDetails.getEducationBackground() != null) {
+            student.setEducationBackground(studentDetails.getEducationBackground());
         }
 
->>>>>>> 47f4fab (Updated with new features)
         return studentRepository.save(student);
     }
 
@@ -144,11 +133,25 @@ public class StudentService {
         return studentRepository.searchByName(name); // This should call the custom @Query method
     }
 
-<<<<<<< HEAD
-=======
     // Add method to upload profile picture
     public String uploadProfilePicture(MultipartFile file) {
         try {
+            // Validate file
+            if (file == null || file.isEmpty()) {
+                throw new IllegalArgumentException("File cannot be empty");
+            }
+
+            // Validate file type
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                throw new IllegalArgumentException("Only image files are allowed");
+            }
+
+            // Validate file size (max 5MB)
+            if (file.getSize() > 5 * 1024 * 1024) {
+                throw new IllegalArgumentException("File size cannot exceed 5MB");
+            }
+
             // Define upload directory
             String UPLOAD_DIR = "uploads/profile_pictures/";
             Path uploadPath = Paths.get(UPLOAD_DIR);
@@ -173,5 +176,4 @@ public class StudentService {
         }
     }
 
->>>>>>> 47f4fab (Updated with new features)
 }

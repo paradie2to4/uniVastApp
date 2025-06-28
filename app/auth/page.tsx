@@ -93,21 +93,13 @@ export default function AuthPage() {
     try {
       console.log('Starting signup process...');
       // 1. Register the user
-      const response = await fetch("http://localhost:8080/api/users", {
+      const response = await fetch("/api/users", {
         method: "POST",
-<<<<<<< HEAD
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(signupData),
-      });
-
-      console.log('Signup response status:', response.status);
-      if (!response.ok) {
-        throw new Error("Sign-up failed");
-=======
         headers: { 
           "Content-Type": "application/json",
           "Accept": "application/json"
         },
+        credentials: "include",
         body: JSON.stringify({
           username: signupData.username,
           email: signupData.email,
@@ -126,20 +118,16 @@ export default function AuthPage() {
       
       if (!response.ok) {
         throw new Error(responseData.error || "Sign-up failed");
->>>>>>> 47f4fab (Updated with new features)
       }
 
       // 2. After successful signup, log the user in
-      const loginResponse = await fetch("http://localhost:8080/api/users/login", {
+      const loginResponse = await fetch("/api/users/login", {
         method: "POST",
-<<<<<<< HEAD
-        headers: { "Content-Type": "application/json" },
-=======
         headers: { 
           "Content-Type": "application/json",
           "Accept": "application/json"
         },
->>>>>>> 47f4fab (Updated with new features)
+        credentials: "include",
         body: JSON.stringify({
           username: signupData.username,
           password: signupData.password,
@@ -148,24 +136,12 @@ export default function AuthPage() {
 
       console.log('Auto-login response status:', loginResponse.status);
       if (!loginResponse.ok) {
-<<<<<<< HEAD
-        throw new Error("Auto-login after signup failed");
-=======
         const errorData = await loginResponse.json();
         throw new Error(errorData.error || "Auto-login after signup failed");
->>>>>>> 47f4fab (Updated with new features)
       }
 
       const userData = await loginResponse.json();
       console.log('Auto-login successful, user data:', userData);
-<<<<<<< HEAD
-      localStorage.setItem("univast_user", JSON.stringify(userData));
-      Cookies.set('is_logged_in', 'true', { path: '/' });
-
-      // 3. Redirect based on role
-      console.log('Redirecting based on role:', userData.role);
-      switch (userData.role) {
-=======
       
       // Store JWT token and user data
       const { token, ...userInfo } = userData;
@@ -173,10 +149,12 @@ export default function AuthPage() {
       
       if (userInfo.role === "STUDENT") {
         // Fetch the student profile using the student ID
-        const studentProfileRes = await fetch(`http://localhost:8080/api/students/${userInfo.studentId}`, {
+        const studentProfileRes = await fetch(`/api/students/${userInfo.studentId}`, {
           headers: {
-            'Authorization': `Bearer ${token}`
-          }
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json'
+          },
+          credentials: "include"
         });
         if (!studentProfileRes.ok) {
           throw new Error("Failed to fetch student profile");
@@ -191,7 +169,6 @@ export default function AuthPage() {
       // Redirecting based on the user role
       console.log('Redirecting based on role:', userInfo.role);
       switch (userInfo.role) {
->>>>>>> 47f4fab (Updated with new features)
         case "STUDENT":
           console.log('Redirecting to student dashboard...');
           router.push("/student-dashboard");
@@ -210,88 +187,26 @@ export default function AuthPage() {
       }
     } catch (error) {
       console.error("Sign-up error:", error);
-<<<<<<< HEAD
-      alert("Sign-up failed. Please try again later.");
-=======
       alert(error instanceof Error ? error.message : "Sign-up failed. Please try again later.");
->>>>>>> 47f4fab (Updated with new features)
     }
   };
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-<<<<<<< HEAD
-
     try {
-      console.log('Starting login process in auth page...')
-      const response = await fetch("http://localhost:8080/api/users/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-=======
-    try {
-      const response = await fetch('http://localhost:8080/api/users/login', {
+      const response = await fetch('/api/users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
->>>>>>> 47f4fab (Updated with new features)
+        credentials: 'include',
         body: JSON.stringify({
           username: loginData.loginInput,
           password: loginData.loginPassword,
         }),
       })
 
-<<<<<<< HEAD
-      console.log('Login response status:', response.status)
-      
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('Login API error:', errorText)
-        throw new Error(`Login failed: ${response.status} ${response.statusText}`)
-      }
-
-      const userData = await response.json()
-      console.log('Login successful, user data:', userData)
-
-      // Validate user data
-      if (!userData.id || !userData.role) {
-        console.error('Invalid user data received:', userData)
-        throw new Error('Invalid user data received from server')
-      }
-
-      // Store user data in localStorage
-      if (userData.role === "STUDENT") {
-        // Fetch the student profile using the user ID
-        const studentProfileRes = await fetch(`http://localhost:8080/api/students/user/${userData.id}`);
-        if (!studentProfileRes.ok) {
-          throw new Error("Failed to fetch student profile");
-        }
-        const studentProfile = await studentProfileRes.json();
-        // Store only the student object (with correct student id)
-        localStorage.setItem("univast_user", JSON.stringify(studentProfile));
-      } else {
-        localStorage.setItem("univast_user", JSON.stringify(userData));
-      }
-      Cookies.set('is_logged_in', 'true', { path: '/' });
-
-      // Redirect based on role
-      console.log('Redirecting based on role:', userData.role)
-      switch (userData.role) {
-        case 'STUDENT':
-          console.log('Redirecting to student dashboard...')
-          router.push('/student-dashboard')
-          break
-        case 'UNIVERSITY':
-          console.log('Redirecting to university dashboard...')
-          router.push('/university-dashboard')
-          break
-        case 'ADMIN':
-          console.log('Redirecting to admin dashboard...')
-          router.push('/admin-dashboard')
-          break
-        default:
-          console.error('Unknown user role:', userData.role)
-=======
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(errorText || 'Login failed')
@@ -313,8 +228,12 @@ export default function AuthPage() {
         userToStore.studentId = user.studentId;
         // Fetch student profile data if needed for local storage
         try {
-          const studentProfileResponse = await fetch(`http://localhost:8080/api/students/${user.studentId}`, {
-             headers: { 'Authorization': `Bearer fake-jwt-token` }
+          const studentProfileResponse = await fetch(`/api/students/${user.studentId}`, {
+             headers: { 
+               'Authorization': `Bearer fake-jwt-token`,
+               'Accept': 'application/json'
+             },
+             credentials: 'include'
           });
            if (studentProfileResponse.ok) {
               const studentProfile = await studentProfileResponse.json();
@@ -353,16 +272,11 @@ export default function AuthPage() {
           router.push('/admin-dashboard')
           break
         default:
->>>>>>> 47f4fab (Updated with new features)
           router.push('/auth?tab=login')
       }
     } catch (error) {
       console.error("Login error:", error)
-<<<<<<< HEAD
-      alert("Login failed. Please check your credentials and try again.")
-=======
       alert(error instanceof Error ? error.message : "Login failed. Please check your credentials and try again.")
->>>>>>> 47f4fab (Updated with new features)
     }
   }
 

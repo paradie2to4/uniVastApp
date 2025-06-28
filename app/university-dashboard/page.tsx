@@ -5,11 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-<<<<<<< HEAD
-import { FileText, Search, University, BookOpen, LineChartIcon as ChartLine, Plus, Pencil, Trash2 } from "lucide-react"
-=======
 import { FileText, Search, University, BookOpen, LineChartIcon as ChartLine, Plus, Pencil, Trash2, Clock, DollarSign } from "lucide-react"
->>>>>>> 47f4fab (Updated with new features)
 import DashboardSidebar from "@/components/dashboard-sidebar"
 import DashboardHeader from "@/components/dashboard-header"
 import {
@@ -23,14 +19,15 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-<<<<<<< HEAD
-
-// Add interfaces for our data types
-=======
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
+
+// Add helper function for getting initials
+const getInitials = (firstName: string, lastName: string) => {
+  return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+};
 
 // Add interfaces for our data types
 interface UniversityData {
@@ -45,7 +42,6 @@ interface UniversityData {
   accreditation: string;
 }
 
->>>>>>> 47f4fab (Updated with new features)
 interface Program {
   id: number
   name: string
@@ -54,43 +50,22 @@ interface Program {
   description: string
   tuitionFee: number
   applicationCount: number
-<<<<<<< HEAD
-}
-
-interface Student {
-  firstName: string
-  lastName: string
-  email: string
-  gpa: number
-}
-
-interface Application {
-  id: number
-  program: { name: string }
-  student: Student
-  status: string
-  createdAt: string
-  feedback?: string
-  uploadedFilePath?: string
-  personalStatement?: string
-=======
   university?: {
     id: number
   }
 }
 
-// Updated Student interface to match StudentProfileDTO
 interface Student {
-  id?: number; // Added ID as it's in DTO
+  id: number;
   firstName: string
   lastName: string
   email: string
-  profilePicture?: string | null; // Allow null
-  bio?: string | null; // Allow null
-  gpa?: number | null; // Allow null
-  dateOfBirth?: string | null; // Expecting YYYY-MM-DD format from backend DTO, allow null
-  location?: string | null; // Allow null
-  educationBackground?: string | null; // Allow null
+  gpa: number
+  profilePicture?: string | null
+  bio?: string | null
+  dateOfBirth?: string | null
+  location?: string | null
+  educationBackground?: string | null
 }
 
 interface Application {
@@ -104,7 +79,6 @@ interface Application {
   personalStatement?: string;
   studentId: number;
   studentName: string;
-  studentEmail: string;
   studentGpa?: number;
   programId: number;
   programName: string;
@@ -112,7 +86,6 @@ interface Application {
   universityName: string;
   submissionDate: string;
   lastUpdated: string;
->>>>>>> 47f4fab (Updated with new features)
 }
 
 // Add ApplicationStatus type
@@ -127,14 +100,6 @@ const APPLICATION_STATUSES = [
 type ApplicationStatus = typeof APPLICATION_STATUSES[number];
 
 export default function UniversityDashboard() {
-<<<<<<< HEAD
-  const [activeTab, setActiveTab] = useState("dashboard")
-  const [isAddProgramDialogOpen, setIsAddProgramDialogOpen] = useState(false)
-  const [universityData, setUniversityData] = useState({
-    name: "University",
-    logo: "/placeholder.svg?height=40&width=40",
-    acceptanceRate: 5,
-=======
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("dashboard")
   const [isAddProgramDialogOpen, setIsAddProgramDialogOpen] = useState(false)
@@ -150,7 +115,6 @@ export default function UniversityDashboard() {
     phoneNumber: "",
     foundedYear: undefined,
     accreditation: ""
->>>>>>> 47f4fab (Updated with new features)
   })
 
   // Add state for Add Program form fields
@@ -176,8 +140,6 @@ export default function UniversityDashboard() {
   const [isReviewSubmitting, setIsReviewSubmitting] = useState(false);
   const [reviewError, setReviewError] = useState("");
 
-<<<<<<< HEAD
-=======
   // Add state for profile form
   const [isProfileSubmitting, setIsProfileSubmitting] = useState(false)
   const [profileError, setProfileError] = useState("")
@@ -199,9 +161,6 @@ export default function UniversityDashboard() {
   const [isFetchingStudentProfile, setIsFetchingStudentProfile] = useState(false);
   const [fetchStudentProfileError, setFetchStudentProfileError] = useState<string | null>(null);
 
-  // Add search query state
-  const [searchQuery, setSearchQuery] = useState("");
-
   // Add authentication check
   useEffect(() => {
     const token = localStorage.getItem("univast_token");
@@ -221,7 +180,6 @@ export default function UniversityDashboard() {
     setUser(user);
   }, [router]);
 
->>>>>>> 47f4fab (Updated with new features)
   const sidebarItems = [
     { icon: <University size={20} />, label: "Dashboard", tab: "dashboard" },
     { icon: <BookOpen size={20} />, label: "Programs", tab: "programs" },
@@ -237,46 +195,6 @@ export default function UniversityDashboard() {
     return new Date(date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
   }
 
-<<<<<<< HEAD
-  // Load university data and fetch programs/applications
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true)
-      setFetchError("")
-      try {
-        const storedUserData = localStorage.getItem("univast_user")
-        if (storedUserData) {
-          const user = JSON.parse(storedUserData)
-          if (user.role === "UNIVERSITY") {
-            setUniversityData({
-              name: user.universityName || "University",
-              logo: user.logo || "/placeholder.svg?height=40&width=40",
-              acceptanceRate: 5,
-            })
-
-            // Fetch programs for this university
-            const programsResponse = await fetch(
-              `http://localhost:8080/api/universities/${user.id}/programs`
-            )
-            if (!programsResponse.ok) throw new Error("Failed to fetch programs")
-            const programsData = await programsResponse.json()
-            setPrograms(programsData)
-
-            // Fetch applications for this university
-            const applicationsResponse = await fetch(
-              `http://localhost:8080/api/applications/university/${user.id}`
-            )
-            if (!applicationsResponse.ok) throw new Error("Failed to fetch applications")
-            const applicationsData = await applicationsResponse.json()
-            setApplications(applicationsData)
-          }
-        }
-      } catch (err) {
-        console.error("Error fetching data:", err)
-        setFetchError(err instanceof Error ? err.message : "Error fetching data")
-      } finally {
-        setIsLoading(false)
-=======
   // Add logout function
   const handleLogout = () => {
     localStorage.removeItem("univast_token");
@@ -383,16 +301,11 @@ export default function UniversityDashboard() {
         setFetchError(err instanceof Error ? err.message : "Error fetching data");
       } finally {
         setIsLoading(false);
->>>>>>> 47f4fab (Updated with new features)
       }
     }
 
     fetchData()
-<<<<<<< HEAD
-  }, [])
-=======
   }, []) // Empty dependency array means this runs once on mount
->>>>>>> 47f4fab (Updated with new features)
 
   // Handle Add Program form submission
   const handleAddProgram = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -400,13 +313,6 @@ export default function UniversityDashboard() {
     setIsSubmitting(true)
     setError("")
     try {
-<<<<<<< HEAD
-      const storedUserData = localStorage.getItem("univast_user")
-      console.log("Stored user data:", storedUserData)
-      const user = storedUserData ? JSON.parse(storedUserData) : null
-      console.log("Parsed user data:", user)
-      const universityId = user?.id
-=======
       const token = localStorage.getItem("univast_token");
       const storedUserData = localStorage.getItem("univast_user")
       
@@ -415,8 +321,7 @@ export default function UniversityDashboard() {
       }
 
       const user = JSON.parse(storedUserData);
-      const universityId = user?.universityId
->>>>>>> 47f4fab (Updated with new features)
+      const universityId = user?.id
 
       if (!universityId) {
         throw new Error("University ID not found")
@@ -432,8 +337,6 @@ export default function UniversityDashboard() {
         description: programDescription,
       })
 
-<<<<<<< HEAD
-=======
       const formData = new FormData();
       formData.append('name', programName);
       formData.append('degree', programDegree);
@@ -441,41 +344,22 @@ export default function UniversityDashboard() {
       formData.append('tuitionFee', programTuition);
       formData.append('description', programDescription);
 
->>>>>>> 47f4fab (Updated with new features)
       const response = await fetch(
         `http://localhost:8080/api/universities/${universityId}/programs`,
         {
           method: "POST",
           headers: {
-<<<<<<< HEAD
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: programName,
-            degree: programDegree,
-            duration: programDuration,
-            tuitionFee: Number(programTuition),
-            description: programDescription,
-          }),
-=======
             'Authorization': `Bearer ${token}`,
             "Accept": "application/json"
           },
           body: formData
->>>>>>> 47f4fab (Updated with new features)
         }
       )
 
       if (!response.ok) {
-<<<<<<< HEAD
-        const errorData = await response.text()
-        console.error("Server response:", errorData)
-        throw new Error(errorData || "Failed to add program")
-=======
         const errorData = await response.json()
         console.error("Server response:", errorData)
         throw new Error(errorData.message || "Failed to add program")
->>>>>>> 47f4fab (Updated with new features)
       }
 
       const newProgram = await response.json()
@@ -504,8 +388,6 @@ export default function UniversityDashboard() {
     setIsReviewDialogOpen(true);
   };
 
-<<<<<<< HEAD
-=======
   // Function to open edit program dialog
   const openEditDialog = (program: Program) => {
     setSelectedProgram(program);
@@ -517,33 +399,25 @@ export default function UniversityDashboard() {
     setIsEditProgramDialogOpen(true);
   };
 
->>>>>>> 47f4fab (Updated with new features)
   // Function to handle review submit
   const handleReviewSubmit = async () => {
     if (!selectedApplication) return;
     setIsReviewSubmitting(true);
     setReviewError("");
     try {
-<<<<<<< HEAD
-=======
       const token = localStorage.getItem("univast_token");
       if (!token) {
         throw new Error("No authentication token found. Please log in again.");
       }
 
->>>>>>> 47f4fab (Updated with new features)
       const response = await fetch(
         `http://localhost:8080/api/applications/${selectedApplication.id}/status`,
         {
           method: "PUT",
-<<<<<<< HEAD
-          headers: { "Content-Type": "application/json" },
-=======
           headers: { 
             'Authorization': `Bearer ${token}`,
             "Content-Type": "application/json" 
           },
->>>>>>> 47f4fab (Updated with new features)
           body: JSON.stringify({
             status: reviewStatus,
             feedback: reviewFeedback,
@@ -571,8 +445,6 @@ export default function UniversityDashboard() {
     }
   };
 
-<<<<<<< HEAD
-=======
   // Add delete program function
   const handleDeleteProgram = async (programId: number) => {
     if (!confirm('Are you sure you want to delete this program?')) return;
@@ -852,29 +724,6 @@ export default function UniversityDashboard() {
     }
   };
 
-  // Helper function to get initials
-  const getInitials = (firstName?: string | null, lastName?: string | null): string => {
-    const firstInitial = firstName ? firstName.charAt(0) : '';
-    const lastInitial = lastName ? lastName.charAt(0) : '';
-    return (firstInitial + lastInitial).toUpperCase();
-  };
-
-  // Helper function to get initials for university (using name)
-  const getUniversityInitials = (name?: string | null): string => {
-    if (!name) return '';
-    const words = name.split(' ');
-    if (words.length === 1) {
-      return words[0].charAt(0).toUpperCase();
-    } else if (words.length > 1) {
-        // Take first letter of first and last word (if they exist and are not empty)
-        const firstInitial = words[0].charAt(0);
-        const lastInitial = words[words.length - 1].charAt(0);
-        return (firstInitial + lastInitial).toUpperCase();
-    }
-    return '';
-  };
-
->>>>>>> 47f4fab (Updated with new features)
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -900,26 +749,13 @@ export default function UniversityDashboard() {
   }
 
   return (
-<<<<<<< HEAD
-    <div className="flex min-h-screen bg-white">
-=======
     <div className="flex h-screen bg-white">
->>>>>>> 47f4fab (Updated with new features)
       <DashboardSidebar
         items={sidebarItems}
         activeTab={activeTab}
         onTabChange={handleTabChange}
         logoIcon={<University size={20} />}
         logoText="UniVast"
-<<<<<<< HEAD
-      />
-
-      <div className="flex-1 flex flex-col">
-        <DashboardHeader 
-          userType="University Admin" 
-          userName={universityData.name} 
-          userAvatar={universityData.logo} 
-=======
         onLogout={handleLogout}
       />
 
@@ -928,7 +764,6 @@ export default function UniversityDashboard() {
           userType="University Admin" 
           userName={universityData.name} 
           userAvatar={universityData.logo ? (universityData.logo.startsWith('/') ? `http://localhost:8080${universityData.logo}` : universityData.logo) : "/placeholder.svg?height=40&width=40"}
->>>>>>> 47f4fab (Updated with new features)
         />
 
         <section className="bg-gradient-to-r from-purple-50 to-white p-6 md:p-8">
@@ -941,11 +776,7 @@ export default function UniversityDashboard() {
           <p className="text-gray-600">Manage your programs and applications</p>
         </section>
 
-<<<<<<< HEAD
-        <main className="flex-1 p-6 md:p-8">
-=======
         <main className="p-6 md:p-8">
->>>>>>> 47f4fab (Updated with new features)
           {activeTab === "dashboard" && (
             <div className="space-y-8">
               <div className="grid gap-6 md:grid-cols-2">
@@ -1011,11 +842,7 @@ export default function UniversityDashboard() {
                         applications.slice(0, 3).map((app) => (
                           <div key={app.id} className="py-3 first:pt-0 last:pb-0">
                             <div className="flex justify-between items-start">
-<<<<<<< HEAD
-                              <h3 className="font-medium text-purple-800">{app.program?.name || "Program"}</h3>
-=======
                               <h3 className="font-medium text-purple-800">{app.programName || "Program"}</h3>
->>>>>>> 47f4fab (Updated with new features)
                               <span
                                 className={`text-xs px-2 py-0.5 rounded-full
                                 ${app.status === "PENDING" ? "bg-yellow-100 text-yellow-800" : ""}
@@ -1028,23 +855,23 @@ export default function UniversityDashboard() {
                               </span>
                             </div>
                             <p className="text-sm text-gray-600">
-<<<<<<< HEAD
-                              <strong>Student:</strong> {app.student && typeof app.student.firstName === 'string' ? `${app.student.firstName} ${app.student.lastName}` : "Unknown"}
-                            </p>
-                            <p className="text-sm text-gray-600">
-                              <strong>Applied:</strong> {formatDate(app.createdAt)}
-=======
                               <strong>Student:</strong>
                               <span 
                                 className="text-purple-600 hover:underline ml-1 cursor-pointer"
-                                onClick={() => openStudentProfileDialog(app.studentId)}
+                                onClick={() => {
+                                  console.log('Clicked application data:', app);
+                                  if (app.student && app.student.id) {
+                                    openStudentProfileDialog(app.student.id);
+                                  } else {
+                                    console.error("Student data or Student ID is missing for this application.", app);
+                                  }
+                                }}
                               >
-                                {app.studentName || "Unknown"}
+                                {app.student ? `${app.student.firstName} ${app.student.lastName}` : "Unknown"}
                               </span>
                             </p>
                             <p className="text-sm text-gray-600">
                             <strong>Applied:</strong> {formatDate(app.submissionDate)}
->>>>>>> 47f4fab (Updated with new features)
                             </p>
                           </div>
                         ))
@@ -1059,17 +886,10 @@ export default function UniversityDashboard() {
           {activeTab === "programs" && (
             <div className="space-y-6">
               <div className="flex justify-between items-center">
-<<<<<<< HEAD
-                <h2 className="text-2xl font-bold text-purple-800">Programs Management</h2>
-                <Dialog open={isAddProgramDialogOpen} onOpenChange={setIsAddProgramDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button className="bg-purple-600 hover:bg-purple-700">
-=======
                 <h2 className="text-2xl font-bold text-purple-800">Programs</h2>
                 <Dialog open={isAddProgramDialogOpen} onOpenChange={setIsAddProgramDialogOpen}>
                   <DialogTrigger asChild>
                     <Button>
->>>>>>> 47f4fab (Updated with new features)
                       <Plus className="mr-2 h-4 w-4" /> Add Program
                     </Button>
                   </DialogTrigger>
@@ -1080,11 +900,7 @@ export default function UniversityDashboard() {
                         Create a new program for your university. Click save when you're done.
                       </DialogDescription>
                     </DialogHeader>
-<<<<<<< HEAD
-                    <form className="space-y-4 py-4" onSubmit={handleAddProgram}>
-=======
                     <form onSubmit={handleAddProgram} className="space-y-4">
->>>>>>> 47f4fab (Updated with new features)
                       <div className="space-y-2">
                         <Label htmlFor="programName">Program Name</Label>
                         <Input
@@ -1104,13 +920,8 @@ export default function UniversityDashboard() {
                               <SelectValue placeholder="Select degree" />
                             </SelectTrigger>
                             <SelectContent>
-<<<<<<< HEAD
-                              <SelectItem value="BACHELOR">Bachelor</SelectItem>
-                              <SelectItem value="MASTER">Master</SelectItem>
-=======
                               <SelectItem value="BACHELOR">Bachelor's</SelectItem>
                               <SelectItem value="MASTER">Master's</SelectItem>
->>>>>>> 47f4fab (Updated with new features)
                               <SelectItem value="PHD">PhD</SelectItem>
                             </SelectContent>
                           </Select>
@@ -1163,26 +974,6 @@ export default function UniversityDashboard() {
                 </Dialog>
               </div>
 
-<<<<<<< HEAD
-              <div className="space-y-4">
-                {programs.map((program) => (
-                  <Card key={program.id} className="border-purple-100">
-                    <CardContent className="p-6">
-                      <div className="flex flex-col md:flex-row justify-between gap-4">
-                        <div className="flex-1">
-                          <h3 className="text-lg font-bold text-purple-800 mb-1">{program.name}</h3>
-                          <p className="text-sm text-gray-600 mb-1">
-                            {program.degree} • {program.duration}
-                          </p>
-                          <p className="text-sm text-gray-600 mb-3">{program.description}</p>
-                          <p className="text-sm text-gray-600 mb-1">
-                            <strong>Tuition Fee:</strong> ${program.tuitionFee.toLocaleString()}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            <strong>Applications:</strong> {program.applicationCount}
-                          </p>
-                        </div>
-=======
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {currentItems.map((program) => (
                   <Card key={program.id} className="border-purple-100">
@@ -1222,14 +1013,11 @@ export default function UniversityDashboard() {
                           </div>
                         </div>
                         <p className="text-sm text-gray-600 line-clamp-2">{program.description}</p>
->>>>>>> 47f4fab (Updated with new features)
                       </div>
                     </CardContent>
                   </Card>
                 ))}
               </div>
-<<<<<<< HEAD
-=======
 
               {/* Edit Program Dialog */}
               <Dialog open={isEditProgramDialogOpen} onOpenChange={setIsEditProgramDialogOpen}>
@@ -1346,7 +1134,6 @@ export default function UniversityDashboard() {
                   </Pagination>
                 </div>
               )}
->>>>>>> 47f4fab (Updated with new features)
             </div>
           )}
 
@@ -1354,21 +1141,13 @@ export default function UniversityDashboard() {
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-purple-800">Applications Management</h2>
               <div className="space-y-4">
-<<<<<<< HEAD
-                {applications.map((app) => (
-=======
                 {currentApplications.map((app) => (
->>>>>>> 47f4fab (Updated with new features)
                   <Card key={app.id} className="border-purple-100">
                     <CardContent className="p-6">
                       <div className="flex flex-col md:flex-row justify-between gap-4">
                         <div className="flex-1">
                           <div className="flex justify-between items-start mb-3">
-<<<<<<< HEAD
-                            <h3 className="text-lg font-bold text-purple-800">{app.program?.name || "Unknown Program"}</h3>
-=======
                             <h3 className="text-lg font-bold text-purple-800">{app.programName || "Unknown Program"}</h3>
->>>>>>> 47f4fab (Updated with new features)
                             <span
                               className={`text-xs px-2 py-0.5 rounded-full
                               ${app.status === "PENDING" ? "bg-yellow-100 text-yellow-800" : ""}
@@ -1380,40 +1159,25 @@ export default function UniversityDashboard() {
                               {app.status}
                             </span>
                           </div>
-<<<<<<< HEAD
-                          <p className="text-sm text-gray-600 mb-1">
-                            <strong>Student:</strong> {app.student && typeof app.student.firstName === 'string' ? `${app.student.firstName} ${app.student.lastName}` : "Unknown"}
-                          </p>
-                          <p className="text-sm text-gray-600 mb-1">
-                            <strong>Email:</strong> {app.student && typeof app.student.email === 'string' ? app.student.email : "Unknown"}
-                          </p>
-                          <p className="text-sm text-gray-600 mb-1">
-                            <strong>Applied:</strong> {formatDate(app.createdAt)}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            <strong>GPA:</strong> {app.student && typeof app.student.gpa !== 'undefined' ? app.student.gpa : "N/A"}
-                          </p>
-                          {app.personalStatement && (
-                            <div className="mt-2">
-                              <h4 className="text-sm font-medium text-gray-700">Personal Statement:</h4>
-                              <p className="text-sm text-gray-600 mt-1 bg-gray-50 p-3 rounded-md">
-                                {app.personalStatement}
-                          </p>
-                            </div>
-                          )}
-=======
                           <div className="space-y-2">
                             <p className="text-sm text-gray-600">
                               <strong>Student:</strong>
                               <span 
                                 className="text-purple-600 hover:underline ml-1 cursor-pointer"
-                                onClick={() => openStudentProfileDialog(app.studentId)}
+                                onClick={() => {
+                                  console.log('Clicked application data:', app);
+                                  if (app.student && app.student.id) {
+                                    openStudentProfileDialog(app.student.id);
+                                  } else {
+                                    console.error("Student data or Student ID is missing for this application.", app);
+                                  }
+                                }}
                               >
-                                {app.studentName || "Unknown"}
+                                {app.student ? `${app.student.firstName} ${app.student.lastName}` : "Unknown"}
                               </span>
                             </p>
                             <p className="text-sm text-gray-600">
-                              <strong>Email:</strong> {app.studentEmail || "N/A"}
+                              <strong>Email:</strong> {app.student?.email || "N/A"}
                             </p>
                           
                             <p className="text-sm text-gray-600">
@@ -1452,7 +1216,6 @@ export default function UniversityDashboard() {
                               </div>
                             )}
                           </div>
->>>>>>> 47f4fab (Updated with new features)
                         </div>
                         <div className="flex items-end justify-end md:min-w-[120px]">
                           <Button
@@ -1467,8 +1230,6 @@ export default function UniversityDashboard() {
                   </Card>
                 ))}
               </div>
-<<<<<<< HEAD
-=======
 
               {/* Applications Pagination */}
               {totalApplicationsPages > 1 && (
@@ -1637,7 +1398,6 @@ export default function UniversityDashboard() {
                   </form>
                 </CardContent>
               </Card>
->>>>>>> 47f4fab (Updated with new features)
             </div>
           )}
         </main>
@@ -1652,118 +1412,54 @@ export default function UniversityDashboard() {
             </DialogDescription>
           </DialogHeader>
           {selectedApplication && (
-            <div className="space-y-4">
-              <div>
-                <strong>Student:</strong> {selectedApplication.student && typeof selectedApplication.student.firstName === 'string' ? `${selectedApplication.student.firstName} ${selectedApplication.student.lastName}` : "Unknown"}
+            <div className="space-y-4 py-4">
+              <div className="text-sm text-gray-700">
+                <p><strong>Student:</strong> {selectedApplication.student ? `${selectedApplication.student.firstName} ${selectedApplication.student.lastName}` : 'Unknown'}</p>
+                <p><strong>Program:</strong> {selectedApplication.program ? selectedApplication.program.name : 'Unknown Program'}</p>
+                <p><strong>Uploaded File:</strong> {selectedApplication.uploadedFilePath ? <a href={`http://localhost:8080/${selectedApplication.uploadedFilePath}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">View File</a> : 'No file uploaded'}</p>
               </div>
-              <div>
-<<<<<<< HEAD
-                <strong>Program:</strong> {selectedApplication.program?.name || "Unknown Program"}
-=======
-                <strong>Program:</strong> {selectedApplication.programName || "Unknown Program"}
->>>>>>> 47f4fab (Updated with new features)
-              </div>
-              {selectedApplication.uploadedFilePath && (
-                <div>
-                  <strong>Uploaded File:</strong>{' '}
-                  <a
-<<<<<<< HEAD
-                    href={`http://localhost:8080/api/applications/${selectedApplication.id}/file`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-purple-600 underline"
-                  >
-                    View File
-                  </a>
-                      </div>
-              )}
-              {selectedApplication.personalStatement && (
-                <div>
-                  <strong>Personal Statement:</strong>
-                  <p className="text-sm text-gray-600 mt-1 bg-gray-50 p-3 rounded-md">
-                    {selectedApplication.personalStatement}
-                  </p>
-                      </div>
-              )}
-              <div>
+
+              <div className="space-y-2">
                 <Label htmlFor="reviewStatus">Status</Label>
-                <select
-                  id="reviewStatus"
-                  className="border rounded w-full p-2"
-                  value={reviewStatus}
-                  onChange={e => setReviewStatus(e.target.value as ApplicationStatus)}
+                <Select 
+                  value={reviewStatus} 
+                  onValueChange={(value: ApplicationStatus | "") => setReviewStatus(value)}
                 >
-                  {APPLICATION_STATUSES.map((status) => (
-                    <option key={status} value={status}>{status.replace(/_/g, " ")}</option>
-                  ))}
-                </select>
-                      </div>
-              <div>
-                <Label htmlFor="reviewFeedback">Feedback (optional)</Label>
+                  <SelectTrigger id="reviewStatus" className="border-purple-100">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {APPLICATION_STATUSES.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {status}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="reviewFeedback">Feedback</Label>
                 <Textarea
                   id="reviewFeedback"
                   value={reviewFeedback}
-                  onChange={e => setReviewFeedback(e.target.value)}
-                  placeholder="Enter feedback for the applicant"
-                  rows={3}
-                        />
-                      </div>
-              {reviewError && <div className="text-red-500">{reviewError}</div>}
-              <DialogFooter>
-                <Button onClick={handleReviewSubmit} disabled={isReviewSubmitting} className="bg-purple-600 hover:bg-purple-700">
-                  {isReviewSubmitting ? "Saving..." : "Save"}
+                  onChange={(e) => setReviewFeedback(e.target.value)}
+                  placeholder="Enter feedback for the application"
+                  className="border-purple-100"
+                  rows={4}
+                />
+              </div>
+              <div className="mt-4">
+                {reviewError && <div className="text-red-500">{reviewError}</div>}
+                <Button
+                  className="bg-purple-600 hover:bg-purple-700"
+                  onClick={handleReviewSubmit}
+                  disabled={isReviewSubmitting}
+                >
+                  {isReviewSubmitting ? "Submitting..." : "Submit Review"}
                 </Button>
-              </DialogFooter>
-=======
-                    href={selectedApplication.uploadedFilePath}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View File
-                  </a>
-                </div>
-              )}
+              </div>
             </div>
           )}
-          <div className="mt-4">
-            <Label htmlFor="reviewStatus">Status</Label>
-            <Select 
-              value={reviewStatus} 
-              onValueChange={(value: ApplicationStatus | "") => setReviewStatus(value)}
-            >
-              <SelectTrigger id="reviewStatus" className="border-purple-100">
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                {APPLICATION_STATUSES.map((status) => (
-                  <SelectItem key={status} value={status}>
-                    {status}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="mt-4">
-            <Label htmlFor="reviewFeedback">Feedback</Label>
-            <Textarea
-              id="reviewFeedback"
-              value={reviewFeedback}
-              onChange={(e) => setReviewFeedback(e.target.value)}
-              placeholder="Enter feedback for the application"
-              className="border-purple-100"
-              rows={4}
-            />
-          </div>
-          <div className="mt-4">
-            {reviewError && <div className="text-red-500">{reviewError}</div>}
-            <Button
-              className="bg-purple-600 hover:bg-purple-700"
-              onClick={handleReviewSubmit}
-              disabled={isReviewSubmitting}
-            >
-              {isReviewSubmitting ? "Submitting..." : "Submit Review"}
-            </Button>
-          </div>
         </DialogContent>
       </Dialog>
 
@@ -1783,16 +1479,17 @@ export default function UniversityDashboard() {
           {viewedStudentProfile && (
             <div className="space-y-4 mt-4">
               <div className="flex items-center space-x-4">
-                 {/* Display profile picture or initials */}
                 {viewedStudentProfile.profilePicture ? (
                   <img 
-                    src={viewedStudentProfile.profilePicture || '/default-avatar.png'}
+                    src={viewedStudentProfile.profilePicture}
                     alt={`${viewedStudentProfile.firstName} ${viewedStudentProfile.lastName}'s profile picture`}
                     className="w-20 h-20 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="w-20 h-20 rounded-full bg-purple-200 flex items-center justify-center text-2xl font-bold text-purple-800">
-                    {getInitials(viewedStudentProfile.firstName, viewedStudentProfile.lastName)}
+                  <div className="w-20 h-20 rounded-full bg-purple-100 flex items-center justify-center">
+                    <span className="text-2xl font-semibold text-purple-600">
+                      {getInitials(viewedStudentProfile.firstName, viewedStudentProfile.lastName)}
+                    </span>
                   </div>
                 )}
                 <div>
@@ -1802,10 +1499,10 @@ export default function UniversityDashboard() {
               </div>
 
               <div className="grid grid-cols-2 gap-4 text-sm text-gray-700">
-                 <div><strong>GPA:</strong> {viewedStudentProfile.gpa || 'N/A'}</div>
-                 <div><strong>Date of Birth:</strong> {viewedStudentProfile.dateOfBirth ? new Date(viewedStudentProfile.dateOfBirth).toLocaleDateString() : 'N/A'}</div>
-                 <div><strong>Location:</strong> {viewedStudentProfile.location || 'N/A'}</div>
-                 <div><strong>Education:</strong> {viewedStudentProfile.educationBackground || 'N/A'}</div>
+                <div><strong>GPA:</strong> {viewedStudentProfile.gpa || 'N/A'}</div>
+                <div><strong>Date of Birth:</strong> {viewedStudentProfile.dateOfBirth ? new Date(viewedStudentProfile.dateOfBirth).toLocaleDateString() : 'N/A'}</div>
+                <div><strong>Location:</strong> {viewedStudentProfile.location || 'N/A'}</div>
+                <div><strong>Education:</strong> {viewedStudentProfile.educationBackground || 'N/A'}</div>
               </div>
               {viewedStudentProfile.bio && (
                 <div>
@@ -1813,15 +1510,10 @@ export default function UniversityDashboard() {
                   <p>{viewedStudentProfile.bio}</p>
                 </div>
               )}
->>>>>>> 47f4fab (Updated with new features)
             </div>
           )}
         </DialogContent>
       </Dialog>
     </div>
   )
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 47f4fab (Updated with new features)

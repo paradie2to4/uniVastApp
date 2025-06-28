@@ -1,18 +1,11 @@
 package com.university.app.model;
-
-<<<<<<< HEAD
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-=======
->>>>>>> 47f4fab (Updated with new features)
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-<<<<<<< HEAD
-=======
 import jakarta.validation.constraints.NotNull;
->>>>>>> 47f4fab (Updated with new features)
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -21,10 +14,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "uniusers")
-<<<<<<< HEAD
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-=======
->>>>>>> 47f4fab (Updated with new features)
 public class User {
 
     @Id
@@ -44,11 +34,8 @@ public class User {
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
-
-<<<<<<< HEAD
-=======
     @NotNull(message = "Role is required")
->>>>>>> 47f4fab (Updated with new features)
+
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
@@ -59,20 +46,14 @@ public class User {
     private boolean active;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-<<<<<<< HEAD
     @JsonBackReference(value = "student-user")
     private Student student;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonBackReference(value = "university-user")
-=======
-    @JsonBackReference
-    private Student student;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonBackReference
->>>>>>> 47f4fab (Updated with new features)
     private University university;
+
+
 
     // Constructors
     public User() {
